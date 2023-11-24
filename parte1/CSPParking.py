@@ -93,7 +93,6 @@ def main():
     set_up_problem(problem, grid, ambulances, pe)
 
     solutions = problem.getSolutions()
-    print(solutions)
 
     rw.write(gen_output_data(solutions, grid))
 
