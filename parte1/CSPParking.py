@@ -17,15 +17,17 @@ def gen_matrix_one_solution(matrix: list, solution:dict, grid):
 def gen_output_data(solutions: list, grid: tuple):
     impresas = []
     super_matrix = []
-    for i in range(min(3, len(solutions))):
-        matrix = []
-        random = randint(0, len(solutions) - 1)
-        while random in impresas:
+    
+    if len(solutions) > 0:
+        for i in range(min(3, len(solutions))):
+            matrix = []
             random = randint(0, len(solutions) - 1)
-        impresas.append(random)
-        gen_matrix_one_solution(matrix, solutions[random], grid)
-        matrix.append(list("*"*grid[1]))
-        super_matrix += matrix
+            while random in impresas:
+                random = randint(0, len(solutions) - 1)
+            impresas.append(random)
+            gen_matrix_one_solution(matrix, solutions[random], grid)
+            matrix.append(list("*"*grid[1]))
+            super_matrix += matrix
 
     first_row = ["Nº Sol:", len(solutions)]
     super_matrix.insert(0, first_row)
@@ -91,7 +93,7 @@ def main():
     set_up_problem(problem, grid, ambulances, pe)
 
     solutions = problem.getSolutions()
-    #print(solutions)
+    print(solutions)
 
     rw.write(gen_output_data(solutions, grid))
 
