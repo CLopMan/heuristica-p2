@@ -39,7 +39,7 @@ def gen_output_data(solutions: list, grid: tuple):
 def free_side(amb1, amb2):
     if amb1[1] != amb2[1]:
         return True
-    return amb1[0] != amb2[0] + 1 and amb1[0] != amb2[0] + 1
+    return (amb1[0] != (amb2[0] + 1)) and (amb1[0] != (amb2[0] - 1))
 
 def tsu_not_on_left(tnu: tuple, tsu:tuple):
     if tnu[0] != tsu[0]:
