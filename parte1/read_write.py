@@ -10,8 +10,8 @@ class Read_Write():
         with open(self.input_path, "r") as file:
             grid: tuple = self.read_grid_size(file)
             pe: list = self.read_electric_places(file)
-            var: tuple = self.read_ambulances(file)
-        return grid, pe, var[0], var[1]
+            ambulances: dict = self.read_ambulances(file)
+        return grid, pe, ambulances
         
     def read_grid_size(self, file) -> tuple:
         parse = ['x', '\n']
@@ -41,22 +41,20 @@ class Read_Write():
 
         return places
     
-    def read_ambulances(self, file) -> tuple:
+    def read_ambulances(self, file) -> dict:
         out = {
             "TSU-C": [],
             "TSU-X": [],
             "TNU-C": [],
             "TNU-X": [],
         }
-        white_spaces = {}
 
         ambulance = None
         while True:
             ambulance = file.readline()
             if not ambulance:
-                return out, white_spaces
+                return out
             out[ambulance[2:-1]].append(ambulance[:-1])
-            white_spaces[ambulance[:-1]] = '-'+ambulance[0]
             
         
     def write(self, data):

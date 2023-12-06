@@ -3,8 +3,10 @@ from read_write import Read_Write
 from random import randint
 from constraint import *
 import sys
+import itertools
 
 NUMBER_OF_SOLUTIONS_MIN = 3
+grid_size: tuple = ()
 
 def gen_matrix_one_solution(matrix: list, solution:dict, grid):
     #print("one solution:", solution)
@@ -37,66 +39,57 @@ def gen_output_data(solutions: list, grid: tuple):
     super_matrix.insert(0, first_row)
     return super_matrix
     
+# EVALUACION POSICION LIBRE AL LADO EN UN BORDE
+def eval_free_side_border(amb1, amb2):
+    if amb1[1] == amb2[1]:
+        return amb1[0] + 1 != amb2[0] and amb1[0] - 1 != amb2[0]
+
+# POSICION LIBRE AL LADO 
+def free_sidea3(amb1, amb2, amb3):
+    if amb1[1] == amb2[1] == amb3[1]:
+        if amb3[0] == amb2[0] + 1 == amb1[0] + 2:
+            return False 
+    return True
+
+# POSICION LIBRE AL LADO, EN UN BORDE
+def free_side_border(amb1, amb2):
+    if (amb1[0] == 0 or amb1[0] == grid_size[0] - 1):
+            return eval_free_side_border(amb1, amb2)
     
+    return True
 
-
-def free_side(space, amb):
-    if space[1] != amb[1]:
-        return False 
-    return space[0] == amb[0] + 1 or space[0] == amb[0] - 1
-
-"""
-casos que ahora mismo se consideran válidos, pero que no debería serlo
-caso: restricción a 3                       | caso: restricción con el límite       
-- A cumple la restricción con B             |    - B cumple la restricción con A    
-- C cumple la restricción con C             |    - A cumple la restricción con B    
-- A B y C no cumplen las restricciones      |    - A no tiene hueco                 
-                                            |  limite                               
-A                                           |  A                                    
-B                                           |  B                                    
-C                                           |  -                                     
-==================================================================================
-Casos raros
-| caso: plaza libre pero otra no
-|                               
-|                               
-| límite limite limite limite   
-| A       - A   -               
-| - B     B -   B               
-|               C               
-|               - D             
-
-
-Idea: modelar los espacios en blanco
-
-"""
 
 def tsu_not_on_left(tnu: tuple, tsu:tuple):
     if tnu[0] != tsu[0]:
         return True
     return tsu[1] > tnu[1]
 
-def set_constraints(problem:Problem, ambulances:dict, white_spaces: dict):
+def set_constraints(problem:Problem, ambulances:dict):
     # Every ambulance with other every ambulance
     for i in ambulances:
         for e in ambulances[i]:
             # free place right next to the ambulance
-            problem.addConstraint(free_side, [white_spaces[e], e])
             for j in ambulances:
                 for ee in ambulances[j]:
-                    problem.addConstraint(AllDifferentConstraint(), [white_spaces[e], ee])
                     if e != ee:
                         # All diferent
                         problem.addConstraint(AllDifferentConstraint(), [e, ee])
-                        # no puede ocupar la misma posición que una ambulancia 
+                        problem.addConstraint(free_side_border, [e, ee])
     
-        
+
     # TNU cannot have tsu on left
     tsus = ambulances["TSU-X"] + ambulances["TSU-C"]
     tnus = ambulances["TNU-X"] + ambulances["TNU-C"]
     for tnu in tnus:
         for tsu in tsus:
             problem.addConstraint(tsu_not_on_left, [tnu, tsu])
+    ambulances = tsus + tnus
+
+    for i in itertools.permutations(ambulances, 3):
+        problem.addConstraint(free_sidea3, list(i))
+
+
+
 
 def gen_domain_grid(grid):
     domain = []
@@ -105,7 +98,7 @@ def gen_domain_grid(grid):
             domain.append((i, j))
     return domain
 
-def set_up_problem(problem: Problem, grid:tuple, ambulances: dict, pe:list, white_spaces: dict):
+def set_up_problem(problem: Problem, grid:tuple, ambulances: dict, pe:list):
     complete_grid = gen_domain_grid(grid)
 
     # Variables - initialization 
@@ -113,19 +106,18 @@ def set_up_problem(problem: Problem, grid:tuple, ambulances: dict, pe:list, whit
     problem.addVariables(ambulances["TSU-X"], complete_grid)
     problem.addVariables(ambulances["TNU-C"], pe)
     problem.addVariables(ambulances["TNU-X"], complete_grid)
-    for ambulance in white_spaces:
-        problem.addVariable(white_spaces[ambulance], complete_grid) # el dominio de los espacios en blanco es cualquier espacio 
-
     # constraints 
-    set_constraints(problem, ambulances, white_spaces)
+    set_constraints(problem, ambulances)
 
 
 def main():
     rw = Read_Write(sys.argv[1])
-    grid, pe, ambulances, white_spaces = rw.read()
+    grid, pe, ambulances = rw.read()
+    global grid_size
+    grid_size = grid
     
     problem = Problem()
-    set_up_problem(problem, grid, ambulances, pe, white_spaces)
+    set_up_problem(problem, grid, ambulances, pe)
 
     solutions = problem.getSolutions()
 
