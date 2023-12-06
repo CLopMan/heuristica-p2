@@ -1,5 +1,9 @@
 #include "ambulance.hpp"
 
+int constexpr CAPACIDAD_CONTAGIOSOS = 2;
+int constexpr CAPACIDAD_NCONTAGIOSOS = 8;
+int constexpr CAPACIDAD_TOTAL = 10;
+
 bool Ambulance::ev_pos(int x, int y) {
     if (0 <= x <= limit_x && 0 <= y <= limit_y) {
         return true;
@@ -31,6 +35,15 @@ void Ambulance::move_down() {
     }
 }
 
+void Ambulance::pick_up_contagioso() {cont_contagioso++;}
+
+void Ambulance::pick_up_ncontagioso() {cont_no_contagioso++;}
+
+void Ambulance::drop_contagioso() {cont_contagioso--;}
+
+void Ambulance::drop_ncontagioso() {cont_no_contagioso--;}
+
+// esto se debería borrar
 void Ambulance::eval_slot(Casilla casilla) {
     energy -= casilla.get_cost();
     switch (casilla.get_type())
@@ -40,7 +53,7 @@ void Ambulance::eval_slot(Casilla casilla) {
         break;
 
     case no_contagioso:
-        if (10 > cont_no_contagioso + cont_contagioso && (cont_contagioso == 0 || cont_no_contagioso < 8)) cont_no_contagioso++;
+        if (CAPACIDAD_TOTAL > cont_no_contagioso + cont_contagioso && (cont_contagioso == 0 || cont_no_contagioso < CAPACIDAD_NCONTAGIOSOS)) cont_no_contagioso++;
         break;
     
     default:

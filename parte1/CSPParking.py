@@ -8,6 +8,7 @@ import itertools
 NUMBER_OF_SOLUTIONS_MIN = 3
 grid_size: tuple = ()
 
+# ======================= print ==============================
 def gen_matrix_one_solution(matrix: list, solution:dict, grid):
     #print("one solution:", solution)
     for i in range(grid[0]):
@@ -39,19 +40,23 @@ def gen_output_data(solutions: list, grid: tuple):
     super_matrix.insert(0, first_row)
     return super_matrix
     
-# EVALUACION POSICION LIBRE AL LADO EN UN BORDE
+
+# ====================== CONSTRAINTS ============================
+
 def eval_free_side_border(amb1, amb2):
     if amb1[1] == amb2[1]:
         return amb1[0] + 1 != amb2[0] and amb1[0] - 1 != amb2[0]
 
-# POSICION LIBRE AL LADO 
+# 3 ambulances must not be continous in the same column
 def free_sidea3(amb1, amb2, amb3):
+    x = [amb1[0], amb2[0], amb3[0]]
+    x.sort()
     if amb1[1] == amb2[1] == amb3[1]:
-        if amb3[0] == amb2[0] + 1 == amb1[0] + 2:
+        if x[2] == x[1] + 1 == x[0] + 2:
             return False 
     return True
 
-# POSICION LIBRE AL LADO, EN UN BORDE
+# two ambulances cannot be together next to a border
 def free_side_border(amb1, amb2):
     if (amb1[0] == 0 or amb1[0] == grid_size[0] - 1):
             return eval_free_side_border(amb1, amb2)
@@ -65,31 +70,28 @@ def tsu_not_on_left(tnu: tuple, tsu:tuple):
     return tsu[1] > tnu[1]
 
 def set_constraints(problem:Problem, ambulances:dict):
+    # ambulances list
+    tsus = ambulances["TSU-X"] + ambulances["TSU-C"]
+    tnus = ambulances["TNU-X"] + ambulances["TNU-C"]
+    ambulances = tsus + tnus
+
     # Every ambulance with other every ambulance
-    for i in ambulances:
-        for e in ambulances[i]:
-            # free place right next to the ambulance
-            for j in ambulances:
-                for ee in ambulances[j]:
-                    if e != ee:
-                        # All diferent
-                        problem.addConstraint(AllDifferentConstraint(), [e, ee])
-                        problem.addConstraint(free_side_border, [e, ee])
+    for i in itertools.combinations(ambulances, 2):
+        # All diferent
+        problem.addConstraint(AllDifferentConstraint(), list(i))
+        problem.addConstraint(free_side_border, list(i))
     
 
     # TNU cannot have tsu on left
-    tsus = ambulances["TSU-X"] + ambulances["TSU-C"]
-    tnus = ambulances["TNU-X"] + ambulances["TNU-C"]
     for tnu in tnus:
         for tsu in tsus:
             problem.addConstraint(tsu_not_on_left, [tnu, tsu])
-    ambulances = tsus + tnus
 
-    for i in itertools.permutations(ambulances, 3):
+    for i in itertools.combinations(ambulances, 3):
         problem.addConstraint(free_sidea3, list(i))
 
 
-
+# =============================== Miscelaneous ======================
 
 def gen_domain_grid(grid):
     domain = []
@@ -110,6 +112,7 @@ def set_up_problem(problem: Problem, grid:tuple, ambulances: dict, pe:list):
     set_constraints(problem, ambulances)
 
 
+# ============================ Main ===================================
 def main():
     rw = Read_Write(sys.argv[1])
     grid, pe, ambulances = rw.read()
