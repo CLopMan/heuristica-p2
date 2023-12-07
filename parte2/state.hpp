@@ -18,16 +18,16 @@ struct State {
     void move_down() {ambulance.move_down();};
     
     void pick_up_contagioso(Map map) {
-        if (map.get_slot(ambulance.get_position().x, ambulance.get_position().y).tipo == contagioso) ambulance.pick_up_contagioso();
+        if (map.get_slot(ambulance.get_position().x, ambulance.get_position().y).get_type() == contagioso) ambulance.pick_up_contagioso();
     };
     void pick_up_ncontagioso(Map map) {
-        if (map.get_slot(ambulance.get_position().x, ambulance.get_position().y).tipo == no_contagioso) ambulance.pick_up_ncontagioso();
+        if (map.get_slot(ambulance.get_position().x, ambulance.get_position().y).get_type() == no_contagioso) ambulance.pick_up_ncontagioso();
     };
     void drop_contagioso(Map map) {
-        if (map.get_slot(ambulance.get_position().x, ambulance.get_position().y).tipo == hospital_c) ambulance.drop_contagioso();
+        if (map.get_slot(ambulance.get_position().x, ambulance.get_position().y).get_type() == hospital_c) ambulance.drop_contagioso();
     };
     void drop_ncontagioso(Map map) {
-        if (map.get_slot(ambulance.get_position().x, ambulance.get_position().y).tipo == hospital_nc) ambulance.drop_ncontagioso();
+        if (map.get_slot(ambulance.get_position().x, ambulance.get_position().y).get_type() == hospital_nc) ambulance.drop_ncontagioso();
     };
 
 };
