@@ -82,6 +82,11 @@ struct State {
         && ambulance.energy == other.ambulance.energy && contagiosos == other.contagiosos && no_contagiosos == other.no_contagiosos)};
     
     };
+
+    void set_final() {
+        contagiosos = 0; 
+        no_contagiosos = 0;
+    };
 };
 
 #endif

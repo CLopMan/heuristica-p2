@@ -8,12 +8,11 @@ Heap::Heap(int n) {
     contents = v;
 }
 
-int Heap::pop() {
+State Heap::pop() {
     
-    //State s = contents[contents.size() - 2].s;
-    Element e = contents[contents.size() - 2];
+    State s = contents[contents.size() - 2].s;
     contents.erase(contents.end() - 2);
-    return e.f;
+    return s;
 
 }
 

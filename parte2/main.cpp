@@ -56,42 +56,9 @@ int h1(State s);
 */
 int main (int argc, char** argv) {
     Map const map(argv[1]);
-    State s1 (map);
-    State s2 (map);
-    State s3 (map);
-    State s4 (map);
-    State s5 (map);
-    State s6 (map);
-
-    Heap h(6);
-
-    h.insert(s5, 8);
-  
-    h.insert(s1, 1);
- 
-    h.insert(s6, 10);
-    
-    h.insert(s4, 6);
-   
-    h.insert(s3, 4);
- 
-    h.insert(s2, 2);
-
-    
-
-    for (auto e : h.contents) {
-        std::cout << e.f << ", ";
-    }
-    std::cout << "\n";
-    while (!h.is_empty()) {
-        std::cout << h.pop() << "\n";
-
-        for (auto e : h.contents) {
-            std::cout << e.f << ", ";
-        }
-        std::cout << "\n==============\n";
-    }
-    
+    State origin(map);
+    State final(map);
+    final.set_final(); 
 
 
     return 0;
