@@ -39,12 +39,12 @@ void Ambulance::pick_up_contagioso() {cont_contagioso++;}
 
 void Ambulance::pick_up_ncontagioso() {cont_no_contagioso++;}
 
-void Ambulance::drop_contagioso() {cont_contagioso--;}
+void Ambulance::drop_contagioso() {cont_contagioso = 0;}
 
-void Ambulance::drop_ncontagioso() {cont_no_contagioso--;}
+void Ambulance::drop_ncontagioso() {cont_no_contagioso = 0;}
 
 // esto se debería borrar
-void Ambulance::eval_slot(Casilla casilla) {
+/*void Ambulance::eval_slot(Map map) {
     energy -= casilla.get_cost();
     switch (casilla.get_type())
     {
@@ -59,4 +59,4 @@ void Ambulance::eval_slot(Casilla casilla) {
     default:
         break;
     }
-}
+}*/

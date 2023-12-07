@@ -25,6 +25,7 @@ private:
 
 public: 
     Ambulance(int xParking, int yParking) : position{xParking, yParking}, cont_contagioso(0), cont_no_contagioso(0), energy(ENERGIA_INICIAL) {}
+    Position get_position() {return position;};
     void move_right(); 
     void move_left();
     void move_up();

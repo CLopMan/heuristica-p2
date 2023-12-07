@@ -25,11 +25,10 @@ enum tipo_casilla{
     no_transitable
 };
 
-class Casilla {
-private:
+struct Casilla {
     tipo_casilla tipo; 
     int coste; 
-public:
+
     Casilla(tipo_casilla tipo, int cost = 0) {
         Costes costes;
         switch (tipo)
@@ -63,7 +62,7 @@ public:
 
 class Map {
 private: 
-    std::vector<std::vector<Casilla>> map;
+    std::vector<Casilla> map;
     int xSize;
     int ySize;
 
@@ -71,6 +70,10 @@ public:
     Map(std::string path);
     int get_xSize() {return xSize;};
     int get_ySize() {return ySize;};
+    Casilla get_slot(int x, int y) {
+        int index = xSize*x + y;
+        return map[index];
+    }
 };
 
 #endif
