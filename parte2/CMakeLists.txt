@@ -1,7 +1,12 @@
 # General
 cmake_minimum_required(VERSION 3.25)
 project(parte2 LANGUAGES CXX)
-add_executable(parte2 ambulance.cpp map.hpp main.cpp state.hpp )
+add_executable(parte2 
+                ambulance.cpp
+                map.hpp
+                map.cpp
+                main.cpp 
+                state.hpp )
 
 # Estandar
 set(CMAKE_CXX_STANDARD 20)

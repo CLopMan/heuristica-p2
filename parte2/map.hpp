@@ -25,11 +25,13 @@ enum tipo_casilla{
     no_transitable
 };
 
-struct Casilla {
+class Casilla {
+private:
     tipo_casilla tipo; 
     int coste; 
-
+public:
     Casilla(tipo_casilla tipo, int cost = 0) {
+        this->tipo = tipo;
         Costes costes;
         switch (tipo)
         {
@@ -71,9 +73,11 @@ public:
     int get_xSize() {return xSize;};
     int get_ySize() {return ySize;};
     Casilla get_slot(int x, int y) {
-        int index = xSize*x + y;
+        int index = ySize*x + y;
         return map[index];
     }
+    Casilla create_slot(std::string name);
+    void print();
 };
 
 #endif
