@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include "position.hpp"
 
 struct Costes {
     int contagioso = 1;
@@ -65,13 +66,15 @@ public:
 class Map {
 private: 
     std::vector<Casilla> map;
-    int xSize;
-    int ySize;
+    int xSize; // tamaño de fila (número de comlumnas)
+    int ySize; // tamaño de columna (número de filas)
 
 public:
     Map(std::string path);
     int get_xSize() {return xSize;};
     int get_ySize() {return ySize;};
+    Position search_slot(tipo_casilla tipo);
+    int get_ill(tipo_casilla tipo);
     Casilla get_slot(int x, int y) {
         int index = ySize*x + y;
         return map[index];

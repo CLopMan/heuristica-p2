@@ -1,4 +1,9 @@
+#ifndef STATE_HPP
+
+#define STATE_HPP
+
 #include "ambulance.hpp"
+#include "position.hpp"
 #include "map.hpp"
 
 struct State {
@@ -8,8 +13,15 @@ struct State {
     int no_contagiosos; 
 
     // constructor
-    void origin_gen(Map map);
-    void final_gen(Map map);
+    State(Map map) {
+        Position pos_parking = map.search_slot(parking);
+        ambulance = Ambulance(pos_parking.x, pos_parking.y, map.get_ySize() - 1, map.get_xSize()- 1);
+        contagiosos = map.get_ill(contagioso);
+        no_contagiosos = map.get_ill(no_contagioso);
+
+    };
+    State() = default;
+    //void final_gen(Map map);
 
     // operands
     void move_right() {ambulance.move_right();}; 
@@ -71,3 +83,5 @@ struct State {
     
     };
 };
+
+#endif

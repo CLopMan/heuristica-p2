@@ -6,7 +6,9 @@ add_executable(parte2
                 map.hpp
                 map.cpp
                 main.cpp 
-                state.hpp )
+                state.hpp 
+                heap.cpp
+                )
 
 # Estandar
 set(CMAKE_CXX_STANDARD 20)

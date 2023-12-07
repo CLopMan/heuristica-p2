@@ -5,12 +5,9 @@
 #include <iostream>
 #include <array>
 #include "map.hpp"
+#include "position.hpp"
 
 int constexpr ENERGIA_INICIAL = 50;
-struct Position {
-    int  x;
-    int y;
-};
 
 
 struct Ambulance {
@@ -22,7 +19,8 @@ struct Ambulance {
     int limit_y;
     
     bool ev_pos(int x, int y);
-    Ambulance(int xParking, int yParking) : position{xParking, yParking}, cont_contagioso(0), cont_no_contagioso(0), energy(ENERGIA_INICIAL) {}
+    Ambulance() = default;
+    Ambulance(int xParking, int yParking, int xLimit, int yLimit) : position{xParking, yParking}, cont_contagioso(0), cont_no_contagioso(0), energy(ENERGIA_INICIAL), limit_x(xLimit), limit_y(yLimit) {}
     Position get_position() {return position;};
     void move_right(); 
     void move_left();

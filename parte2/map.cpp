@@ -31,15 +31,35 @@ Map::Map(std::string path) {
 }
 
 Casilla Map::create_slot(std::string name) {
-    std::cout << name << "\n";
     if (name == "N") return (Casilla(no_contagioso));
     if (name == "C") return (Casilla(contagioso));
     if (name == "CC") return (Casilla(hospital_c));
-    if (name == "NC") return (Casilla(hospital_nc));
+    if (name == "CN") return (Casilla(hospital_nc));
     if (name == "P") return (Casilla(parking));
     if (name == "X") return (Casilla(no_transitable));
     return (Casilla(normal, stoi(name)));
 }
+
+Position Map::search_slot(tipo_casilla tipo) {
+    int x=0, y=0, aux = 0;
+    for (Casilla c : map) {
+        if (c.get_type() == tipo) {
+            break;
+        }
+        y = (y + 1) % xSize; // 3
+        if (!(++aux % xSize)) x++;
+    }
+    return Position{x, y};
+}
+
+int Map::get_ill(tipo_casilla tipo) {
+    int out = 0;
+    for (Casilla c : map) {
+        if (c.get_type() == tipo) out++;
+    }
+    return out;
+}
+
 
 void Map::print() {
     std::cout << xSize << "x" << ySize << "\n";
@@ -103,3 +123,18 @@ void Map::print() {
 
     }
 }
+
+
+
+/*
+3x4
+
+0, 0 ; 0, 1; 0, 2; 
+1, 0 ; 1, 1; 1, 2; 
+2, 0 ; 2, 1; 2, 2; 
+3, 0 ; 3, 1; 3, 2; 
+
+
+
+
+*/
