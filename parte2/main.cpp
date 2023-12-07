@@ -66,40 +66,32 @@ int main (int argc, char** argv) {
     Heap h(6);
 
     h.insert(s5, 8);
-    for (auto e : h.contents) {
-        std::cout << e.f << ", ";
-    }
-    std::cout << "\n";
-    h.insert(s1, 0);
-    for (auto e : h.contents) {
-        std::cout << e.f << ", ";
-    }
-    std::cout << "\n";
+  
+    h.insert(s1, 1);
+ 
     h.insert(s6, 10);
-    for (auto e : h.contents) {
-        std::cout << e.f << ", ";
-    }
-    std::cout << "\n";
+    
     h.insert(s4, 6);
-    for (auto e : h.contents) {
-        std::cout << e.f << ", ";
-    }
-    std::cout << "\n";
+   
     h.insert(s3, 4);
-    for (auto e : h.contents) {
-        std::cout << e.f << ", ";
-    }
-    std::cout << "\n";
+ 
     h.insert(s2, 2);
-    for (auto e : h.contents) {
-        std::cout << e.f << ", ";
-    }
-    std::cout << "\n";
+
+    
 
     for (auto e : h.contents) {
         std::cout << e.f << ", ";
     }
     std::cout << "\n";
+    while (!h.is_empty()) {
+        std::cout << h.pop() << "\n";
+
+        for (auto e : h.contents) {
+            std::cout << e.f << ", ";
+        }
+        std::cout << "\n==============\n";
+    }
+    
 
 
     return 0;

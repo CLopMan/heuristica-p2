@@ -3,50 +3,46 @@
 Heap::Heap(int n) {
     std::vector<Element> v;
     v.reserve(n);
+    v.push_back(Element{State{}, 999'999});
+    v.push_back(Element{State{}, -1});
     contents = v;
-    capacity = n;
 }
 
-State Heap::pop() {
+int Heap::pop() {
     
-    State s = contents[contents.size() - 1].s;
-    contents.pop_back();
-    return s;
-    
-    
+    //State s = contents[contents.size() - 2].s;
+    Element e = contents[contents.size() - 2];
+    contents.erase(contents.end() - 2);
+    return e.f;
+
 }
 
 bool Heap::is_empty() {
-    return contents.size() == 0;
+    return contents.size() - 2 == 0;
 }
 
 int Heap::insert(State s, int f) {
-    if (contents.size() + 1 < capacity) {
-        contents.resize(2*contents.size());
-        capacity = 2*contents.size();
-    }
     int start = 0, end = contents.size() - 1;
     Element e{s, f};
-    if (this->is_empty()) {
-        contents.push_back(e);
-        return 0;}
-    else {
-        do {
-        int index = (start + end) / 2;
-        std::cout << "start: " << start << "\n" <<
-                    "end: " << end << "\n" <<
-                    "index: " << index << "\n";
-        Element curr = contents[index];
+    
+    do {
+    int index = (start + end) / 2;
+    Element curr = contents[index];
 
-        if (curr.f <= e.f) {
-            end = index - 1;
-        } else {
-            start = index + 1;
-        }
-        if (start > end) start = end;
-        if (end < start) end = start;
-    } while (start != end);
-    contents.insert(std::next(contents.begin(), start), e);
-    return start;
+    if (curr.f <= e.f) {
+        end = index - 1;
+    } else {
+        start = index + 1;
     }
+    if (start > end) start = end;
+    if (end < start) end = start;
+
+} while (start != end);
+int offset = 0;
+if (contents[start].f > e.f) offset = 1;
+contents.insert(std::next(contents.begin(), start + offset), e);
+for (auto e : contents) {
+}
+return start;
+    
 }

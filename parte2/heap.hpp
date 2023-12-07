@@ -13,10 +13,9 @@ struct Element {
 class Heap {
 public:
     std::vector<Element> contents;
-    int capacity;
 //public:
     Heap(int n);
-    State pop(); // returns and deletes first element
+    int pop(); // returns and deletes first element
     int insert(State s, int f); // emplaces the element in the corresponding slot. Returns the index in which is inserted
     bool is_empty(); // returns true if lenght > 0
 };
