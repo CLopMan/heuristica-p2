@@ -3,7 +3,7 @@
 Heap::Heap(int n) {
     std::vector<Element> v;
     v.reserve(n);
-    v.push_back(Element{State{}, 999'999});
+    v.push_back(Element{State{}, 9'999'999});
     v.push_back(Element{State{}, -1});
     contents = v;
 }

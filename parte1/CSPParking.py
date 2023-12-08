@@ -46,6 +46,7 @@ def gen_output_data(solutions: list, grid: tuple):
 def eval_free_side_border(amb1, amb2):
     if amb1[1] == amb2[1]:
         return amb1[0] + 1 != amb2[0] and amb1[0] - 1 != amb2[0]
+    return True
 
 # 3 ambulances must not be continous in the same column
 def free_sidea3(amb1, amb2, amb3):
@@ -58,7 +59,7 @@ def free_sidea3(amb1, amb2, amb3):
 
 # two ambulances cannot be together next to a border
 def free_side_border(amb1, amb2):
-    if (amb1[0] == 0 or amb1[0] == grid_size[0] - 1):
+    if (amb1[0] - 1 == 0 or amb1[0] == grid_size[0]):
             return eval_free_side_border(amb1, amb2)
     
     return True
@@ -75,10 +76,12 @@ def set_constraints(problem:Problem, ambulances:dict):
     tnus = ambulances["TNU-X"] + ambulances["TNU-C"]
     ambulances = tsus + tnus
 
+    problem.addConstraint(AllDifferentConstraint())
+
+
     # Every ambulance with other every ambulance
-    for i in itertools.combinations(ambulances, 2):
+    for i in itertools.permutations(ambulances, 2):
         # All diferent
-        problem.addConstraint(AllDifferentConstraint(), list(i))
         problem.addConstraint(free_side_border, list(i))
     
 
@@ -99,6 +102,8 @@ def gen_domain_grid(grid):
         for j in range(1, grid[1] + 1):
             domain.append((i, j))
     return domain
+
+# ================== problem inicialization =========================
 
 def set_up_problem(problem: Problem, grid:tuple, ambulances: dict, pe:list):
     complete_grid = gen_domain_grid(grid)

@@ -3,7 +3,17 @@ import csv
 class Read_Write():
     def __init__(self, in_path):
         self.input_path: str = in_path
-        self.output_path: str = in_path + ".csv"
+        aux_list = list(in_path)
+        aux_list2 = []
+        out_path = ""
+        for i in range(len(aux_list) - 1, -1, -1):
+            if aux_list[i] == '/':
+                break
+            aux_list2.insert(0, aux_list[i])
+        for c in aux_list2:
+            out_path += c
+
+        self.output_path: str = out_path + ".csv"
 
 
     def read(self):

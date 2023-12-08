@@ -1,0 +1,20 @@
+parking01-feasible.txt : comprobamos que las ambulancias con congelador sólo pueden estar en casillas con electricidad. 
+Sólo deben existir 2 soluciones posibles. 
+
+parking02-no_feasible.txt : comprobamos lo mismo que en la restricción anterior. Esta vez con más ambulancias con congelador que plazas con electricidad. 
+Por el principio del palomar no existen soluciones posibles. 
+
+parking03-feasible.txt : comprobamos la restricción de plaza libre al lado. La ambulancia 1 tendrá posición física por tener congelador, probocando que sólo existan 
+2 distribuciones posibles de ambulancias. Como las ambulancias 2 y 3 pueden permutar, existirán 
+4 soluciones posibles (2 * 2!)
+
+parking04-no_feasible.txt : comprobamos un casos similar al del anterior, ahora no es posible colocar las ambulancias cumpliendo la plaza libre al lado, por lo que no hay soluciones. Ambas restricciones deben funcionar para que este caso no tenga soluciones. 
+
+parking05-feasible.txt : comprobamos la restricción de plaza libre al lado en un borde. Sólo existe 
+2 soluciones posible. 
+
+parking06-feasible.txt : comprobamos la restricción entre tsu y tnu. En este layout sólo existen 
+6 solución posiblea. 
+
+parking07-no_feasible.txt : misma restricción que la anterior, ahora 
+no existe solución porque necesariamente la tnu sólo tiene una plaza disponible delante de la tsu. 
