@@ -7,6 +7,6 @@ head="test_cases/"
 for i in `ls test_cases`
 do
     caso="$head$i"
-    echo -e "${Yell}TESTING:${NC} $caso\n"
+    echo -e "${Yell}[TESTING]:${NC} $caso\n"
     python CSPParking.py $caso
 done
