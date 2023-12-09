@@ -59,6 +59,18 @@ int Map::get_ill(tipo_casilla tipo) {
     }
     return out;
 }
+std::vector<Position> Map::get_ill_pos(tipo_casilla tipo) {
+    std::vector<Position> out;
+    int x=0, y=0, aux = 0;
+    for (Casilla c : map) {
+        if (c.get_type() == tipo) {
+            out.push_back(Position{x, y});
+        }
+        y = (y + 1) % xSize;
+        if (!(++aux % xSize)) x++;
+    }
+    return out;
+}
 
 
 void Map::print() {

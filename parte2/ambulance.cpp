@@ -43,6 +43,8 @@ void Ambulance::drop_contagioso() {cont_contagioso = 0;}
 
 void Ambulance::drop_ncontagioso() {cont_no_contagioso = 0;}
 
+void Ambulance::recharge() {energy = ENERGIA_INICIAL;}
+
 // esto se debería borrar
 /*void Ambulance::eval_slot(Map map) {
     energy -= casilla.get_cost();

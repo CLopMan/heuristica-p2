@@ -31,39 +31,32 @@ std::vector<State> a_star(State origin, State goal, std::function<int(State,Map)
     while (!frontier.is_empty() and !found){
         std::cout << "*********************************" << std::endl;
         State current = frontier.pop();
-        std::cout << "current: " << current.to_string() << std::endl;
+        std::cout << "current: " << current.to_string() + " coste=" + std::to_string(g[current.to_string()]) << std::endl;
         for (int i = 0; i < frontier.contents.size();i++){
-            std::cout << "frontier: " << frontier.contents[i].s.to_string() << std::endl;
+            std::cout << "frontier: " << frontier.contents[i].s.to_string() + " coste=" + std::to_string(frontier.contents[i].f) << std::endl;
         }   
-        for (auto e : frontier.contents) std::cout << e.f << "\n";
-
-            if (current == goal)
-            {
-                found = true;
-            }
-            else{
+        if (current == goal)
+        {
+            found = true;
+        }
+        else{
             std::vector<State> neighbors = current.neighbors(map);
-            /*for (int i = 0; i < neighbors.size();i++){
-                std::cout << "neighbors: " << neighbors[i].to_string() << std::endl;
-            }*/
             for (State next : neighbors){
-                std::cout << "next: " << next.to_string() << std::endl;
-                int new_cost = g[current.to_string()] + map.get_slot(next.ambulance.get_position().x,next.ambulance.get_position().y).get_cost();
-                std::cout << "new_cost: " << new_cost << std::endl;
+                int new_cost = g[current.to_string()] + map.get_slot(next.ambulance.position.x,next.ambulance.position.y).get_cost();
                 int new_f = new_cost + h(next,map);
-                std::cout << "new_f: " << new_f << std::endl;
                 if ((previous.find(next.to_string()) != previous.end() && new_f < f[next.to_string()]) || previous.find(next.to_string()) == previous.end()){
                     previous[next.to_string()] = current;
                     g[next.to_string()] = new_cost;
                     f[next.to_string()] = new_f;
-                    std::cout << "Antes del insert: " <<  std::endl;
                     frontier.insert(next, f[next.to_string()]);
-                    std::cout << "Despues del insert: " <<  std::endl;
                 }
+            }
+            for (int i = 0; i < neighbors.size();i++){
+                std::cout << "neighbors: " << neighbors[i].to_string() + " /g =" + std::to_string(g[neighbors[i].to_string()]) + " /f =" + std::to_string(f[neighbors[i].to_string()]) << std::endl;
             }
         }   
     }
-    std::cout << "Pasa por aqui3" << std::endl;
+    std::cout << "Solución encontrada" << std::endl;
     State current = goal;
     while (!(current == origin)){
         path.push_back(current);

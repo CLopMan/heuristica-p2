@@ -75,7 +75,9 @@ public:
     int get_ySize() {return ySize;};
     Position search_slot(tipo_casilla tipo);
     int get_ill(tipo_casilla tipo);
-    Casilla get_slot(int x, int y) {
+    std::vector<Position> get_ill_pos(tipo_casilla tipo);
+    Casilla get_slot(int x, int y)
+    {
         int index = ySize*x + y;
         return map[index];
     }
