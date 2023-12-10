@@ -63,13 +63,15 @@ std::vector<State> a_star(State origin, State goal, std::function<int(State,Map)
         current = previous[current.to_string()];
     }
     std::reverse(path.begin(), path.end());
+    for (int i = 0; i < path.size();i++){
+        std::cout << "path: " << path[i].to_string() << std::endl;
+    }
     return path;
 }
 
 int main (int argc, char** argv) {
-    std::cout << "Pasa por aqui" << std::endl;
-    Map const map(argv[1]);
-    std::cout << "Pasa por aqui" << std::endl;
+    Map map(argv[1]);
+    map.print();
     State origin(map);
     State final(map);
     final.set_final(); 

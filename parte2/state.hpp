@@ -9,10 +9,10 @@
 struct State {
     // atributtes
     Ambulance ambulance;
-    int contagiosos; 
-    int no_contagiosos; 
-    std::vector <Position> contagiosos_pos;
-    std::vector <Position> no_contagiosos_pos;
+    int contagiosos; // contagiosos no entregados
+    int no_contagiosos; // no contagioso no entregados
+    std::vector <Position> contagiosos_pos; // posición de los contagiosos no recogidos
+    std::vector <Position> no_contagiosos_pos; // posición de los no contagiosos no recogidos
     // constructor
     State(Map map) {
         Position pos_parking = map.search_slot(parking);
@@ -60,14 +60,16 @@ struct State {
     };
     void drop_contagioso(Map map) {
         if (map.get_slot(ambulance.position.x, ambulance.position.y).get_type() == hospital_c){
+            int contagiosos_entregar = ambulance.cont_contagioso;
             ambulance.drop_contagioso();
-            contagiosos--;
+            contagiosos -= contagiosos_entregar;
         } 
     };
     void drop_ncontagioso(Map map) {
         if (map.get_slot(ambulance.position.x, ambulance.position.y).get_type() == hospital_nc){
+            int no_contagiosos_entregar = ambulance.cont_no_contagioso;
             ambulance.drop_ncontagioso();
-            no_contagiosos--; 
+            no_contagiosos -= no_contagiosos_entregar;
         }
     };
     void recharge() {ambulance.recharge();};

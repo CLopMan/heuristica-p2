@@ -9,7 +9,7 @@
 struct Costes {
     int contagioso = 1;
     int no_contagioso = 1;
-    int parking = -50;
+    int parking = 1;
     int hospital_c = 1;
     int hospital_nc = 1;
     int no_transitable = 999'999;

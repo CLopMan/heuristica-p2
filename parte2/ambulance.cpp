@@ -5,7 +5,8 @@ int constexpr CAPACIDAD_NCONTAGIOSOS = 8;
 int constexpr CAPACIDAD_TOTAL = 10;
 
 bool Ambulance::ev_pos(int x, int y) {
-    if (0 <= x <= limit_x && 0 <= y <= limit_y) {
+    //if ((0 <= x <= limit_x) && (0 <= y <= limit_y)) {
+    if ((0 <= x && x <= limit_x) && (0 <= y && y <= limit_y)) {
         return true;
     }
     return false;
