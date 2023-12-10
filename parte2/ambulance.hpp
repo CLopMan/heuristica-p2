@@ -22,10 +22,10 @@ struct Ambulance {
     Ambulance() = default;
     Ambulance(int xParking, int yParking, int xLimit, int yLimit) : position{xParking, yParking}, cont_contagioso(0), cont_no_contagioso(0), energy(ENERGIA_INICIAL), limit_x(xLimit), limit_y(yLimit) {}
 
-    bool move_right(); 
-    bool move_left();
-    bool move_up();
-    bool move_down();
+    void move_right(); 
+    void move_left();
+    void move_up();
+    void move_down();
     void eval_slot(Casilla casilla);
     void pick_up_contagioso();
     void pick_up_ncontagioso();

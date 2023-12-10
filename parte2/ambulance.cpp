@@ -12,36 +12,20 @@ bool Ambulance::ev_pos(int x, int y) {
     return false;
 }
 
-bool Ambulance::move_right() {
-    if (ev_pos(position.x, position.y + 1)) {
-        position.y += 1;
-        return true;
-    }
-    return false;
+void Ambulance::move_right() {
+    position.y += 1;
 }
 
-bool Ambulance::move_left() {
-    if (ev_pos(position.x, position.y - 1)) {
-        position.y -= 1;
-        return true;
-    }
-    return false;
+void Ambulance::move_left() {
+    position.y -= 1;
 }
 
-bool Ambulance::move_up() {
-    if (ev_pos(position.x - 1, position.y)) {
+void Ambulance::move_up() {
         position.x -= 1;
-        return true;
-    }
-    return false;
 }
 
-bool Ambulance::move_down() {
-    if (ev_pos(position.x + 1, position.y)) {
-        position.x += 1;
-        return true;
-    }
-    return false;
+void Ambulance::move_down() {
+    position.x += 1;
 }
 
 void Ambulance::pick_up_contagioso() {cont_contagioso++;}
