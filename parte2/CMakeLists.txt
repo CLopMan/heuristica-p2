@@ -8,6 +8,7 @@ add_executable(parte2
                 main.cpp 
                 state.hpp 
                 heap.cpp
+                element.hpp
                 )
 
 # Estandar

@@ -4,12 +4,7 @@
 
 #include "state.hpp"
 #include <vector>
-
-struct Element {
-    State s;
-    int f;
-};
-
+#include "element.hpp"
 class Heap {
 public:
     std::vector<Element> contents;

@@ -5,7 +5,7 @@
 #include "ambulance.hpp"
 #include "position.hpp"
 #include "map.hpp"
-
+#include "element.hpp"
 struct State {
     // atributtes
     Ambulance ambulance;
@@ -126,24 +126,27 @@ struct State {
     };
 
     // neighbors
-    std::vector<State> neighbors(Map & map){
-        std::vector<State> neighbors;
+    std::vector<Element> neighbors(Map & map){
+        std::vector<Element> neighbors;
         std::vector<State> states(9);
-        for (int i = 0; i < 9;i++){
+        std::vector<int> costes(9);
+        for (int i = 0; i < 9; i++)
+        {
             states[i] = *this;
         }
-        states[0].move_right(map);
-        states[1].move_left(map);
-        states[2].move_up(map);
-        states[3].move_down(map);
-        states[4].pick_up_contagioso();
-        states[5].pick_up_ncontagioso();
-        states[6].drop_contagioso(map);
-        states[7].drop_ncontagioso(map);
-        states[8].recharge(map);
+        costes[0] = states[0].move_right(map);
+        costes[1] = states[1].move_left(map);
+        costes[2] = states[2].move_up(map);
+        costes[3] = states[3].move_down(map);
+        costes[4] = states[4].pick_up_contagioso();
+        costes[5] = states[5].pick_up_ncontagioso();
+        costes[6] = states[6].drop_contagioso(map);
+        costes[7] = states[7].drop_ncontagioso(map);
+        costes[8] = states[8].recharge(map);
         for (int i = 0; i < 9;i++){
-            if (states[i] != *this){
-                neighbors.push_back(states[i]);
+            if (states[i]!= *this){
+                Element elem = {states[i], costes[i]};
+                neighbors.push_back(elem);
             }
         }
         return neighbors;
