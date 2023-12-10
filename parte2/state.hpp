@@ -5,7 +5,7 @@
 #include "ambulance.hpp"
 #include "position.hpp"
 #include "map.hpp"
-#include "element.hpp"
+
 struct State {
     // atributtes
     Ambulance ambulance;
@@ -35,7 +35,7 @@ struct State {
             if (diff_energy >= 0){
                 ambulance.move_right();
                 ambulance.energy = diff_energy;
-                return diff_energy;
+                return aux_energy;
             }
         }
         return 0;
@@ -47,7 +47,7 @@ struct State {
             if (diff_energy >= 0){
                 ambulance.move_left();
                 ambulance.energy = diff_energy;
-                return diff_energy;
+                return aux_energy;
             }
         }
         return 0;
@@ -59,7 +59,7 @@ struct State {
             if (diff_energy >= 0){
                 ambulance.move_up();
                 ambulance.energy = diff_energy;
-                return diff_energy;
+                return aux_energy;
             }
         }
         return 0;
@@ -71,7 +71,7 @@ struct State {
             if (diff_energy >= 0){
                 ambulance.move_down();
                 ambulance.energy = diff_energy;
-                return diff_energy;
+                return aux_energy;
             }
         }
         return 0;
@@ -125,32 +125,6 @@ struct State {
         return 0;
     };
 
-    // neighbors
-    std::vector<Element> neighbors(Map & map){
-        std::vector<Element> neighbors;
-        std::vector<State> states(9);
-        std::vector<int> costes(9);
-        for (int i = 0; i < 9; i++)
-        {
-            states[i] = *this;
-        }
-        costes[0] = states[0].move_right(map);
-        costes[1] = states[1].move_left(map);
-        costes[2] = states[2].move_up(map);
-        costes[3] = states[3].move_down(map);
-        costes[4] = states[4].pick_up_contagioso();
-        costes[5] = states[5].pick_up_ncontagioso();
-        costes[6] = states[6].drop_contagioso(map);
-        costes[7] = states[7].drop_ncontagioso(map);
-        costes[8] = states[8].recharge(map);
-        for (int i = 0; i < 9;i++){
-            if (states[i]!= *this){
-                Element elem = {states[i], costes[i]};
-                neighbors.push_back(elem);
-            }
-        }
-        return neighbors;
-    };
     // state to key
     std::string to_string() {
         std::string key = std::to_string(ambulance.position.x)+ "/" + std::to_string(ambulance.position.y) + "/" + std::to_string(ambulance.cont_contagioso) + "/" + std::to_string(ambulance.cont_no_contagioso) + "/" + std::to_string(ambulance.energy) + "/" + std::to_string(contagiosos) + "/" + std::to_string(no_contagiosos);

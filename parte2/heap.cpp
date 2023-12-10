@@ -8,14 +8,15 @@ Heap::Heap(int n) {
     contents = v;
 }
 
-State Heap::pop() {
+Element Heap::pop() {
     if (this->is_empty()) {
         std::cerr << "El heap está vacío\n";
         State empty;
-        return empty;
+        Element elem = {empty,-1,-1};
+        return elem;
     }
 
-    State s = contents[contents.size() - 2].s;
+    Element s = contents[contents.size() - 2];
     contents.erase(contents.end() - 2);
     return s;
 
@@ -25,9 +26,9 @@ bool Heap::is_empty() {
     return contents.size() - 2 == 0;
 }
 
-int Heap::insert(State s, int f) {
+int Heap::insert(State s, int g, int f) {
     int start = 0, end = contents.size() - 1;
-    Element e{s, f};
+    Element e{s, g, f};
     
     do {
     int index = (start + end) / 2;
