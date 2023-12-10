@@ -5,7 +5,7 @@
 Map::Map(std::string path) {
     std::ifstream file(path, std::ios::in);
     std::vector<Casilla> v; 
-    ySize = 0;
+    ySize = 1;
     xSize = 0;
     if (!file.is_open()) {
         std::cerr << "Unable to open " << path << "\n";
@@ -23,6 +23,7 @@ Map::Map(std::string path) {
                     if (first_row) ySize++;
                 } else slot_name.append(std::string(1, c));
             }
+            v.push_back(create_slot(slot_name)); // last of the line
             first_row = false;
         }
     }
@@ -109,7 +110,7 @@ void Map::print() {
                 std::cout << "C;";
                 break;
             case no_contagioso:
-                std::cout << "NC;";
+                std::cout << "N;";
                 break;
             case parking:
                 std::cout << "P;";
@@ -118,7 +119,7 @@ void Map::print() {
                 std::cout << "CC;";
                 break;
             case hospital_nc:
-                std::cout << "NC;";
+                std::cout << "CN;";
                 break;
             case no_transitable:
                 std::cout << "X;";

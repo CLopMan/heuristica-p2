@@ -1,4 +1,5 @@
 .vscode
 __pycache__
-*.csv
+parte1/*.csv
+parte1/test_cases/*.csv
 build

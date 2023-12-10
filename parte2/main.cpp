@@ -72,11 +72,11 @@ std::vector<State> a_star(State origin, State goal, std::function<int(State,Map)
 int main (int argc, char** argv) {
     Map map(argv[1]);
     map.print();
-    State origin(map);
+    /*State origin(map);
     State final(map);
     final.set_final(); 
     std::cout << "origin: " << origin.to_string() << std::endl;
-    std::vector<State> path = a_star(origin, final, h1, map);
+    std::vector<State> path = a_star(origin, final, h1, map);*/
 
 
     return 0;
