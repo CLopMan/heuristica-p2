@@ -29,12 +29,12 @@ std::vector<State> a_star(State origin, State goal, std::function<int(State,Map)
     frontier.insert(origin, f[origin.to_string()]);
     bool found = false;
     while (!frontier.is_empty() and !found){
-        std::cout << "*********************************" << std::endl;
+        //std::cout << "*********************************" << std::endl;
         State current = frontier.pop();
-        std::cout << "current: " << current.to_string() + " coste=" + std::to_string(g[current.to_string()]) << std::endl;
-        for (int i = 0; i < frontier.contents.size();i++){
-            std::cout << "frontier: " << frontier.contents[i].s.to_string() + " coste=" + std::to_string(frontier.contents[i].f) << std::endl;
-        }   
+        //std::cout << "current: " << current.to_string() + " coste=" + std::to_string(g[current.to_string()]) << std::endl;
+        //for (int i = 0; i < frontier.contents.size();i++){
+          //  std::cout << "frontier: " << frontier.contents[i].s.to_string() + " coste=" + std::to_string(frontier.contents[i].f) << std::endl;
+        //}   
         if (current == goal)
         {
             found = true;
@@ -51,9 +51,9 @@ std::vector<State> a_star(State origin, State goal, std::function<int(State,Map)
                     frontier.insert(next, f[next.to_string()]);
                 }
             }
-            for (int i = 0; i < neighbors.size();i++){
-                std::cout << "neighbors: " << neighbors[i].to_string() + " /g =" + std::to_string(g[neighbors[i].to_string()]) + " /f =" + std::to_string(f[neighbors[i].to_string()]) << std::endl;
-            }
+            //for (int i = 0; i < neighbors.size();i++){
+            //    std::cout << "neighbors: " << neighbors[i].to_string() + " /g =" + std::to_string(g[neighbors[i].to_string()]) + " /f =" + std::to_string(f[neighbors[i].to_string()]) << std::endl;
+            //}
         }   
     }
     std::cout << "Solución encontrada" << std::endl;

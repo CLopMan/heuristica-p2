@@ -28,7 +28,10 @@ struct State {
     //void final_gen(Map map);
 
     // operands
-    void move_right() {ambulance.move_right();}; 
+    void move_right() {
+        ambulance.move_right();
+        
+        }; 
     void move_left() {ambulance.move_left();};
     void move_up() {ambulance.move_up();};
     void move_down() {ambulance.move_down();};
@@ -36,7 +39,7 @@ struct State {
     /*void pick_up_contagioso(Map map) {
         if (map.get_slot(ambulance.get_position().x, ambulance.get_position().y).get_type() == contagioso) ambulance.pick_up_contagioso();
     };*/
-    void pick_up_contagioso(Map map) {
+    void pick_up_contagioso() {
         for (int i = 0; i < contagiosos_pos.size();i++){
             if (ambulance.position.x == contagiosos_pos[i].x && ambulance.position.y == contagiosos_pos[i].y) {
                 contagiosos_pos.erase(contagiosos_pos.begin() + i);
@@ -49,7 +52,7 @@ struct State {
     /*void pick_up_ncontagioso(Map map) {
         if (map.get_slot(ambulance.get_position().x, ambulance.get_position().y).get_type() == no_contagioso) ambulance.pick_up_ncontagioso();
     };*/
-    void pick_up_ncontagioso(Map map) {
+    void pick_up_ncontagioso() {
         for (int i = 0; i < no_contagiosos_pos.size();i++){
             if (ambulance.position.x == no_contagiosos_pos[i].x && ambulance.position.y == no_contagiosos_pos[i].y) {
                 no_contagiosos_pos.erase(no_contagiosos_pos.begin() + i);
@@ -72,7 +75,10 @@ struct State {
             no_contagiosos -= no_contagiosos_entregar;
         }
     };
-    void recharge() {ambulance.recharge();};
+    void recharge(Map map) {
+        if (map.get_slot(ambulance.position.x, ambulance.position.y).get_type() == parking)
+            ambulance.recharge();
+        };
 
     // neighbors
     std::vector<State> neighbors(Map map){
@@ -85,11 +91,11 @@ struct State {
         states[1].move_left();
         states[2].move_up();
         states[3].move_down();
-        states[4].pick_up_contagioso(map);
-        states[5].pick_up_ncontagioso(map);
+        states[4].pick_up_contagioso();
+        states[5].pick_up_ncontagioso();
         states[6].drop_contagioso(map);
         states[7].drop_ncontagioso(map);
-        states[8].recharge();
+        states[8].recharge(map);
         for (int i = 0; i < 9;i++){
             if (states[i] != *this){
                 neighbors.push_back(states[i]);
