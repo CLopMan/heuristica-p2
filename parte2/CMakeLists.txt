@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Opciones de compilacion
-add_compile_options(-Wall -Wextra -Werror -pedantic -pedantic-errors)
+add_compile_options(-Wall -Wextra -Werror -pedantic -pedantic-errors -O3)
 
 
 # incluir todos los directorios de código

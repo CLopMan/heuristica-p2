@@ -9,7 +9,12 @@ Heap::Heap(int n) {
 }
 
 State Heap::pop() {
-    
+    if (this->is_empty()) {
+        std::cerr << "El heap está vacío\n";
+        State empty;
+        return empty;
+    }
+
     State s = contents[contents.size() - 2].s;
     contents.erase(contents.end() - 2);
     return s;
