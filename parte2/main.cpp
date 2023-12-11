@@ -57,7 +57,7 @@ int h1(State s, Map map){
             previous[next.to_string()] = current;
             g[next.to_string()] = new_cost;
             f[next.to_string()] = new_f;
-            if() // si está en frontier
+            if() // si no está en frontier
                 frontier.insert(next, f[next.to_string()]);
         }
     }
@@ -113,6 +113,7 @@ void sucesors_new(State current, std::unordered_map<std::string, State> & previo
     std::vector<int> costes_neigh;
     std::vector<State> states(9);
     std::vector<int> costes(9);
+    // Genero los sucesores
     for (int i = 0; i < 9; i++){states[i] = current;}
     costes[0] = states[0].move_right(map);
     costes[1] = states[1].move_left(map);
@@ -129,16 +130,20 @@ void sucesors_new(State current, std::unordered_map<std::string, State> & previo
             costes_neigh.push_back(costes[i]);
         }
     }
-
+    
     for (int i = 0; i < neighbors.size();i++){
         State next = neighbors[i];
         int new_cost = cerrada.g[current.to_string()] + costes_neigh[i];
         int new_f = new_cost + h1(next,map);
+        // Si no está en cerrada o está en cerrada pero con un coste mayor, lo meto en previous
         if ((cerrada.f.find(next.to_string()) != cerrada.f.end() && new_f < cerrada.f[next.to_string()]) || cerrada.f.find(next.to_string()) == cerrada.f.end()){
             previous[next.to_string()] = current;
         }
+        // Lo meto en abierta
         frontier.insert(next, new_cost, new_f);
     }
+
+    // Imprimo los sucesores
     for (int i = 0; i < neighbors.size();i++){
         std::cout << "neighbors: " << neighbors[i].to_string() << std::endl;
     }
@@ -146,6 +151,7 @@ void sucesors_new(State current, std::unordered_map<std::string, State> & previo
 
 std::vector<State> a_star_new(State origin, State final, std::function<int(State,Map)> h, Map map){
     std::vector<State> path;
+    std::vector<int> costes;
     std::unordered_map<std::string, State> previous{};
     Cerrada cerrada{};
     Heap frontier(1000);
@@ -154,7 +160,10 @@ std::vector<State> a_star_new(State origin, State final, std::function<int(State
     State current;
     frontier.insert(origin, 0, h(origin, map));
     previous[origin.to_string()] = origin;
+
+    // Comienzo del algoritmo
     while (!frontier.is_empty() and !found){
+        // Saco el primer elemento de abierta que no esté en cerrada
         bool en_cerrada = true;
         while (en_cerrada){
             elem_current = frontier.pop();            
@@ -165,41 +174,45 @@ std::vector<State> a_star_new(State origin, State final, std::function<int(State
         current = elem_current.s;
         std::cout << "*********************************" << std::endl;
         std::cout << "current: " << current.to_string() + " coste=" + std::to_string(elem_current.g) << std::endl;
+        // Si es el final, termino
         if (current == final){
             found = true;
         }
+        // Si no, lo meto en cerrada y genero sus sucesores
         else{
             cerrada.insert(current,elem_current.g, elem_current.f);
             sucesors_new(current, previous, cerrada, frontier, map);
         }
+
+        // Imprimo los contenidos de abierta, cerrada y previous
         for (int i = 0; i < frontier.contents.size();i++){
             std::cout << "frontier: " << frontier.contents[i].s.to_string() + " coste=" + std::to_string(frontier.contents[i].f) << std::endl;
         }
-        for (auto e : cerrada.g) {
+        for (auto e : cerrada.f) {
             std::cout << "cerrada: " << e.first << " " << e.second << std::endl;
         }
+        for (auto e : previous) {
+            std::cout << "previous: " << e.first << " " << e.second.to_string() << std::endl;
+        }
     }
+    // Si he encontrado solución, reconstruyo el camino
     if (found){
         
         std::cout << "Solución encontrada" << std::endl;
-        /*for (auto e : previous) {
-            std::cout << "previous: " << e.first << " " << e.second.to_string() << std::endl;
-            if (e.second.to_string() == origin.to_string()) {
-                std::cout << "encontrado" << std::endl;
-                exit(0);
-            } 
-        } no sé cómo se guardan las cosas en previous, pero hay un círculo. un estado A tiene como antecesor a B que tiene de antecesor a C que tiene de antecesor a A */
         while (!(current.to_string() == origin.to_string())){
-            std::cout << "current: " << current.to_string() << std::endl;
             path.push_back(current);
+            costes.push_back(cerrada.g[current.to_string()]);
             current = previous[current.to_string()];
         }
+        path.push_back(origin);
         std::reverse(path.begin(), path.end());
         for (int i = 0; i < path.size();i++){
             std::cout << "path: " << path[i].to_string() << std::endl;
+            std::cout << "coste: " << costes[i] << std::endl;
         }
         return path;
     }
+    // Si no, devuelvo un vector vacío
     std::cout << "No se ha encontrado solución" << std::endl;
     return path;
 }
