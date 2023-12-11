@@ -154,6 +154,61 @@ struct State {
         && state1.ambulance.cont_contagioso == state2.ambulance.cont_contagioso && state1.ambulance.cont_no_contagioso == state2.ambulance.cont_no_contagioso 
         && state1.contagiosos == state2.contagiosos && state1.no_contagiosos == state2.no_contagiosos};
     };
+
+
+
+
+
+    int move_right_recharge(Map & map) {
+        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.y + 1)){
+            int aux_energy = map.get_slot(ambulance.position.x, ambulance.position.y + 1).get_cost();
+            int diff_energy = ambulance.energy - aux_energy;
+            if (diff_energy >= 0){
+                ambulance.move_right();
+                ambulance.energy = diff_energy;
+                return aux_energy;
+            }
+        }
+        return 0;
+    };
+    int move_left_recharge(Map & map) {
+        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.y - 1)){
+            int aux_energy = map.get_slot(ambulance.position.x, ambulance.position.y - 1).get_cost();
+            int diff_energy = ambulance.energy - aux_energy;
+            if (diff_energy >= 0){
+                ambulance.move_left();
+                ambulance.energy = diff_energy;
+                return aux_energy;
+            }
+        }
+        return 0;
+    };
+    int move_up_recharge(Map & map) {
+        if (ambulance.ev_pos(ambulance.position.x - 1, ambulance.position.y)){
+            int aux_energy = map.get_slot(ambulance.position.x, ambulance.position.x - 1).get_cost();
+            int diff_energy = ambulance.energy - aux_energy;
+            if (diff_energy >= 0){
+                ambulance.move_up();
+                ambulance.energy = diff_energy;
+                return aux_energy;
+            }
+        }
+        return 0;
+    };
+    int move_down_recharge(Map & map) {
+        if(ambulance.ev_pos(ambulance.position.x + 1, ambulance.position.y)){
+            int aux_energy = map.get_slot(ambulance.position.x, ambulance.position.x - 1).get_cost();
+            int diff_energy = ambulance.energy - aux_energy;
+            if (diff_energy >= 0){
+                ambulance.move_down();
+                ambulance.energy = diff_energy;
+                return aux_energy;
+            }
+        }
+        return 0;
+    };
+
 };
+
 
 #endif
