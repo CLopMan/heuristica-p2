@@ -104,10 +104,10 @@ struct State {
     }
 
     bool move_up (Map & map) {
-        Casilla slot = map.get_slot(ambulance.position.x, ambulance.position.x - 1);
+        Casilla slot = map.get_slot(ambulance.position.x - 1, ambulance.position.y);
         int coste_casilla = slot.get_cost();
         
-        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.x - 1) && ambulance.energy >= coste_casilla) { // el movimiento está en los límites
+        if (ambulance.ev_pos(ambulance.position.x - 1, ambulance.position.y) && ambulance.energy >= coste_casilla) { // el movimiento está en los límites
             ambulance.move_up(); // movimiento
             ambulance.energy = ambulance.energy - coste_casilla;
             // consecuencias
@@ -118,10 +118,10 @@ struct State {
     }
 
     bool move_down (Map & map) {
-        Casilla slot = map.get_slot(ambulance.position.x, ambulance.position.x + 1);
+        Casilla slot = map.get_slot(ambulance.position.x + 1, ambulance.position.y);
         int coste_casilla = slot.get_cost();
         
-        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.x + 1) && ambulance.energy >= coste_casilla) { // el movimiento está en los límites
+        if (ambulance.ev_pos(ambulance.position.x + 1, ambulance.position.y) && ambulance.energy >= coste_casilla) { // el movimiento está en los límites
             ambulance.move_down(); // movimiento
             ambulance.energy = ambulance.energy - coste_casilla;
 
