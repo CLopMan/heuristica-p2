@@ -3,7 +3,7 @@
 Heap::Heap(int n) {
     std::vector<Element> v;
     v.reserve(n);
-    v.push_back(Element{State{}, 0 , 9'999'999});
+    v.push_back(Element{State{}, 0 , __INT_MAX__});
     v.push_back(Element{State{}, 0 ,-1});
     contents = v;
 }

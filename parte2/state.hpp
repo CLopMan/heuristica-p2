@@ -27,13 +27,76 @@ struct State {
     State() = default;
     //void final_gen(Map map);
     
+    bool consecuences(Casilla slot) {
+        switch (slot.get_type())
+            {
+            case parking:
+                ambulance.recharge();
+                break;
+
+            case hospital_c:
+                contagiosos -= ambulance.cont_contagioso;
+                ambulance.drop_contagioso();
+                break;
+
+            case hospital_nc:
+                if (ambulance.cont_contagioso == 0) { // sólo puedes soltar no contagiosos si ya has soltado contagiosos
+                    no_contagiosos -= ambulance.cont_no_contagioso;
+                    ambulance.drop_ncontagioso();
+                }
+                break;
+            
+            case contagioso:
+                if (ambulance.cont_contagioso < 2 && (ambulance.cont_no_contagioso <= 8)) // capacidad para recoger un contagioso
+                    for (int i = 0; i < contagiosos_pos.size(); ++i) {
+                        if (ambulance.position.x == contagiosos_pos[i].x && ambulance.position.y == contagiosos_pos[i].y) {// posición de un contagioso pendiente de recoger
+                                contagiosos_pos.erase(contagiosos_pos.begin() + i);
+                                ambulance.pick_up_contagioso();
+                            
+                        }
+                    }
+                break;
+            
+            case no_contagioso:
+                if((ambulance.cont_contagioso == 0 && ambulance.cont_no_contagioso < 10) || (ambulance.cont_no_contagioso < 8)) // la ambulancia tiene capacidad para recoger un no contagioso
+                    for (int i = 0; i < no_contagiosos_pos.size(); ++i) {
+                        if (ambulance.position.x == no_contagiosos_pos[i].x && ambulance.position.y == no_contagiosos_pos[i].y) { // posición de un enfermo que aún no se ha recogido
+                            no_contagiosos_pos.erase(no_contagiosos_pos.begin() + i); 
+                            ambulance.pick_up_ncontagioso();
+                        }
+                        
+                    }
+                break;
+            
+            default:
+                break;
+            }
+            return true;
+    }
+
     // operands
+    /*bool move_right (Map & map) {
+        Casilla slot = map.get_slot(ambulance.position.x, ambulance.position.y + 1);
+
+        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.y + 1) && ambulance.energy >= slot.get_cost()) { // el movimiento está en los límites
+            ambulance.move_right(); // movimiento
+
+            // consecuencias
+            return consecuences(slot);
+            
+        }
+        return false;
+    }*/
+
+
     bool move_right(Map & map) {
         if (ambulance.ev_pos(ambulance.position.x, ambulance.position.y + 1)){
             int diff_energy = ambulance.energy - map.get_slot(ambulance.position.x, ambulance.position.y + 1).get_cost();;
-            if (diff_energy >= 0){
+            if (diff_energy >= 0){ // moverse sólo si tengo coste suficiente
                 ambulance.move_right();
                 ambulance.energy = diff_energy;
+
+
                 // Recharge
                 tipo_casilla tipo_casilla_actual = map.get_slot(ambulance.position.x, ambulance.position.y).get_type();
                 if (tipo_casilla_actual == parking){ambulance.recharge();}
@@ -243,63 +306,10 @@ struct State {
         no_contagiosos = 0;
     };
 
-    static bool compare_final(State state1 , State state2){
-        return {state1.ambulance.position.x == state2.ambulance.position.x && state1.ambulance.position.y == state2.ambulance.position.y 
-        && state1.ambulance.cont_contagioso == state2.ambulance.cont_contagioso && state1.ambulance.cont_no_contagioso == state2.ambulance.cont_no_contagioso 
-        && state1.contagiosos == state2.contagiosos && state1.no_contagiosos == state2.no_contagiosos};
-    };
-
-
-
-
-
-    int move_right_recharge(Map & map) {
-        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.y + 1)){
-            int aux_energy = map.get_slot(ambulance.position.x, ambulance.position.y + 1).get_cost();
-            int diff_energy = ambulance.energy - aux_energy;
-            if (diff_energy >= 0){
-                ambulance.move_right();
-                ambulance.energy = diff_energy;
-                return aux_energy;
-            }
-        }
-        return 0;
-    };
-    int move_left_recharge(Map & map) {
-        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.y - 1)){
-            int aux_energy = map.get_slot(ambulance.position.x, ambulance.position.y - 1).get_cost();
-            int diff_energy = ambulance.energy - aux_energy;
-            if (diff_energy >= 0){
-                ambulance.move_left();
-                ambulance.energy = diff_energy;
-                return aux_energy;
-            }
-        }
-        return 0;
-    };
-    int move_up_recharge(Map & map) {
-        if (ambulance.ev_pos(ambulance.position.x - 1, ambulance.position.y)){
-            int aux_energy = map.get_slot(ambulance.position.x, ambulance.position.x - 1).get_cost();
-            int diff_energy = ambulance.energy - aux_energy;
-            if (diff_energy >= 0){
-                ambulance.move_up();
-                ambulance.energy = diff_energy;
-                return aux_energy;
-            }
-        }
-        return 0;
-    };
-    int move_down_recharge(Map & map) {
-        if(ambulance.ev_pos(ambulance.position.x + 1, ambulance.position.y)){
-            int aux_energy = map.get_slot(ambulance.position.x, ambulance.position.x - 1).get_cost();
-            int diff_energy = ambulance.energy - aux_energy;
-            if (diff_energy >= 0){
-                ambulance.move_down();
-                ambulance.energy = diff_energy;
-                return aux_energy;
-            }
-        }
-        return 0;
+    bool compare_final(State state2){
+        return {this->ambulance.position.x == state2.ambulance.position.x && this->ambulance.position.y == state2.ambulance.position.y 
+        && this->ambulance.cont_contagioso == state2.ambulance.cont_contagioso && this->ambulance.cont_no_contagioso == state2.ambulance.cont_no_contagioso 
+        && this->contagiosos == state2.contagiosos && this->no_contagiosos == state2.no_contagiosos};
     };
 
 };

@@ -11,6 +11,8 @@
 #include "ambulance.hpp"
 #include "heap.hpp"
 
+int constexpr inf = __INT_MAX__;
+
 struct Cerrada{
     std::unordered_map<std::string, int> g{};
     std::unordered_map<std::string, int> f{};
@@ -108,48 +110,23 @@ int h1(State s, Map map){
 
 
 
-void sucesors_new(State current, std::unordered_map<std::string, State> & previous, Cerrada &cerrada, Heap & frontier, Map & map){
+std::vector<State> sucesors(State current, Map & map){
+    std::vector<State> neighbors_aux(4, current);
     std::vector<State> neighbors;
-    std::vector<int> costes_neigh;
-    std::vector<State> states(9);
-    std::vector<int> costes(9);
-    // Genero los sucesores
-    for (int i = 0; i < 9; i++){states[i] = current;}
-    costes[0] = states[0].move_right(map);
-    costes[1] = states[1].move_left(map);
-    costes[2] = states[2].move_up(map);
-    costes[3] = states[3].move_down(map);
-    costes[4] = states[4].pick_up_contagioso();
-    costes[5] = states[5].pick_up_ncontagioso();
-    costes[6] = states[6].drop_contagioso(map);
-    costes[7] = states[7].drop_ncontagioso(map);
-    costes[8] = states[8].recharge(map);
-    for (int i = 0; i < 9;i++){
-        if (states[i]!= current){
-            neighbors.push_back(states[i]);
-            costes_neigh.push_back(costes[i]);
-        }
-    }
-    
-    for (int i = 0; i < neighbors.size();i++){
-        State next = neighbors[i];
-        int new_cost = cerrada.g[current.to_string()] + costes_neigh[i];
-        int new_f = new_cost + h1(next,map);
-        // Si no está en cerrada o está en cerrada pero con un coste mayor, lo meto en previous
-        if ((cerrada.f.find(next.to_string()) != cerrada.f.end() && new_f < cerrada.f[next.to_string()]) || cerrada.f.find(next.to_string()) == cerrada.f.end()){
-            previous[next.to_string()] = current;
-        }
-        // Lo meto en abierta
-        frontier.insert(next, new_cost, new_f);
-    }
 
-    // Imprimo los sucesores
-    for (int i = 0; i < neighbors.size();i++){
-        std::cout << "neighbors: " << neighbors[i].to_string() << std::endl;
+    // Genero los sucesores
+    std::vector<bool> aplicable (4, false);
+    aplicable[0] = neighbors_aux[0].move_right(map);
+    aplicable[1] = neighbors_aux[1].move_left(map);
+    aplicable[2] = neighbors_aux[2].move_up(map);
+    aplicable[3] = neighbors_aux[3].move_down(map);
+    for (int i = 0; i < neighbors_aux.size();i++){
+        if (aplicable[i]) neighbors.push_back(neighbors_aux[i]);
     }
+    return neighbors;
 }
 
-std::vector<State> a_star_new(State origin, State final, std::function<int(State,Map)> h, Map map){
+/*std::vector<State> a_star_new(State origin, State final, std::function<int(State,Map)> h, Map map){
     std::vector<State> path;
     std::vector<int> costes;
     std::unordered_map<std::string, State> previous{};
@@ -215,7 +192,59 @@ std::vector<State> a_star_new(State origin, State final, std::function<int(State
     // Si no, devuelvo un vector vacío
     std::cout << "No se ha encontrado solución" << std::endl;
     return path;
+}*/
+
+std::vector<State> reconstruct_path(std::unordered_map<std::string, State> previo, Element goal) {
+    State s = goal.s;
+    std::vector<State> path;
+    while (previo[s.to_string()] != s) {
+        path.push_back(s);
+    }
+    return path;
 }
+
+
+std::vector<State> a_star(State origin, State final, std::function<int(State,Map)> h, Map & map){
+    Heap abierta(10'000); // nodos pendientes por explorar, ordenados por función de evaluación
+    abierta.insert(origin, 0, 0 + h(origin, map)); 
+    Cerrada cerrada{}; // lista de nodos explorados, se almacena la g
+    cerrada.insert(origin, 0, h(origin, map)); // la g para el origen es 0
+    
+    std::unordered_map<std::string, State> previo; 
+    previo[origin.to_string()] = origin; // el origen tiene a sí mismo como antecesor
+
+    Element current; 
+    while (!abierta.is_empty()) { // si hay nodos en abierta => explorar 
+        current = abierta.pop(); // extracción del nodo con mejor f
+        if (!cerrada.g.contains(current.s.to_string())) cerrada.g[current.s.to_string()] = inf; // si el nodo no se ha explorado antes, su g temporal es infinito
+        else if (current.g < cerrada.g[current.s.to_string()]) {  // en la lista abierta pueden haber duplicados de un nodo con distinta g, ordenados por f => si previamente hemos explorado un camino mejor, descartamos este nodo. 
+
+
+            if (current.s.compare_final(final)) return reconstruct_path(previo, current);
+
+            std::vector<State> neighbors = sucesors(current.s, map);
+
+            for (State s : neighbors) {
+                int step_cost = map.get_slot(s.ambulance.position.x, s.ambulance.position.y).get_cost();
+                int temp_g = cerrada.g[current.s.to_string()] + step_cost;
+                if (!cerrada.g.contains(s.to_string())) { // si no se ha explorado antes ese nodo, su g es infinita 
+                    cerrada.g[s.to_string()] = inf;
+                }
+                if (cerrada.g[s.to_string()] > temp_g) {
+                    cerrada.insert(s, temp_g, temp_g + h(s, map)); // actualización de g si obtenemos una mejor g
+                    previo[s.to_string()] = current.s;
+                    abierta.insert(s, temp_g, temp_g + h(s, map)); // insertamos el nodo en abierta por ser un camino candidato 
+                }
+            }
+        }
+        
+
+    }
+
+    return {};
+}
+
+
 
 int main (int argc, char** argv) {
     Map map(argv[1]);
@@ -224,7 +253,7 @@ int main (int argc, char** argv) {
     State final(map);
     final.set_final(); 
     std::cout << "origin: " << origin.to_string() << std::endl;
-    std::vector<State> path = a_star_new(origin, final, h1, map);
+    std::vector<State> path = a_star(origin, final, h1, map);
 
 
     return 0;
