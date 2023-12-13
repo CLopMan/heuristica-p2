@@ -51,3 +51,14 @@ int Heap::insert(State s, int g, int f) {
     return start;
     
 }
+
+int Heap::borrar(State s) {
+    for (int i = 1; i < contents.size() - 1; ++i) {
+        auto e = contents[i];
+        if (e.s == s) {
+            contents.erase(contents.begin() + i);
+            std::cout << "borrado\n";
+        }
+    }
+    return 0;
+}

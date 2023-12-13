@@ -335,7 +335,8 @@ struct State {
     bool operator==(State & other) {
         return {ambulance.position.x == other.ambulance.position.x && ambulance.position.y == other.ambulance.position.y 
         && ambulance.cont_contagioso == other.ambulance.cont_contagioso && ambulance.cont_no_contagioso == other.ambulance.cont_no_contagioso 
-        && ambulance.energy == other.ambulance.energy && contagiosos == other.contagiosos && no_contagiosos == other.no_contagiosos};
+        && ambulance.energy == other.ambulance.energy && contagiosos == other.contagiosos && no_contagiosos == other.no_contagiosos
+        && contagiosos_pos == other.contagiosos_pos && no_contagiosos_pos== other.no_contagiosos_pos};
     };
     bool operator!=(State & other) {
         return {!(ambulance.position.x == other.ambulance.position.x && ambulance.position.y == other.ambulance.position.y 

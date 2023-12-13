@@ -17,7 +17,7 @@ add_executable(parte2
                 element.hpp)
 
 # Opciones de compilacion
-add_compile_options(-Wall -Wextra -Werror -pedantic -pedantic-errors -O3)
+add_compile_options(-Wall -Wextra -Werror -pedantic -pedantic-errors -O3 -march=native)
 
 
 # incluir todos los directorios de código
