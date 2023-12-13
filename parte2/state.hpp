@@ -47,7 +47,7 @@ struct State {
                 break;
             
             case contagioso:
-                if (ambulance.cont_contagioso < 2 && (ambulance.cont_no_contagioso <= 8)) // capacidad para recoger un contagioso
+                if (ambulance.cont_contagioso < 2 && (ambulance.cont_no_contagioso == no_contagiosos || no_contagiosos == 0)) // para recoger a un contagioso tienes que haber entregado a todos lo no contagiosos o tener a los que quedan en la ambulancia
                     for (int i = 0; i < contagiosos_pos.size(); ++i) {
                         if (ambulance.position.x == contagiosos_pos[i].x && ambulance.position.y == contagiosos_pos[i].y) {// posición de un contagioso pendiente de recoger
                                 contagiosos_pos.erase(contagiosos_pos.begin() + i);
@@ -75,21 +75,64 @@ struct State {
     }
 
     // operands
-    /*bool move_right (Map & map) {
+    bool move_right (Map & map) {
         Casilla slot = map.get_slot(ambulance.position.x, ambulance.position.y + 1);
+        int coste_casilla = slot.get_cost();
 
-        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.y + 1) && ambulance.energy >= slot.get_cost()) { // el movimiento está en los límites
+        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.y + 1) && ambulance.energy >= coste_casilla) { // el movimiento está en los límites
             ambulance.move_right(); // movimiento
+            ambulance.energy = ambulance.energy - coste_casilla;
+            // consecuencias
+            return consecuences(slot);
+            
+        }
+        return false;
+    }
+
+    bool move_left (Map & map) {
+        Casilla slot = map.get_slot(ambulance.position.x, ambulance.position.y - 1);
+        int coste_casilla = slot.get_cost();
+
+        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.y - 1) && ambulance.energy >= coste_casilla) { // el movimiento está en los límites
+            ambulance.move_left(); // movimiento
+            ambulance.energy = ambulance.energy - coste_casilla;
+            // consecuencias
+            return consecuences(slot);
+            
+        }
+        return false;
+    }
+
+    bool move_up (Map & map) {
+        Casilla slot = map.get_slot(ambulance.position.x, ambulance.position.x - 1);
+        int coste_casilla = slot.get_cost();
+        
+        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.x - 1) && ambulance.energy >= coste_casilla) { // el movimiento está en los límites
+            ambulance.move_up(); // movimiento
+            ambulance.energy = ambulance.energy - coste_casilla;
+            // consecuencias
+            return consecuences(slot);
+            
+        }
+        return false;
+    }
+
+    bool move_down (Map & map) {
+        Casilla slot = map.get_slot(ambulance.position.x, ambulance.position.x + 1);
+        int coste_casilla = slot.get_cost();
+        
+        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.x + 1) && ambulance.energy >= coste_casilla) { // el movimiento está en los límites
+            ambulance.move_down(); // movimiento
+            ambulance.energy = ambulance.energy - coste_casilla;
 
             // consecuencias
             return consecuences(slot);
             
         }
         return false;
-    }*/
+    }
 
-
-    bool move_right(Map & map) {
+    /*bool move_right(Map & map) {
         if (ambulance.ev_pos(ambulance.position.x, ambulance.position.y + 1)){
             int diff_energy = ambulance.energy - map.get_slot(ambulance.position.x, ambulance.position.y + 1).get_cost();;
             if (diff_energy >= 0){ // moverse sólo si tengo coste suficiente
@@ -280,7 +323,7 @@ struct State {
         }
         return false;
     };
-    
+    */
 
     // state to key
     std::string to_string() {
