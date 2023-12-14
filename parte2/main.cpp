@@ -88,37 +88,58 @@ maximo max_ill(State s, std::vector<Position> enfermo) {
 int h2 (State s, Map map) {
 
     int out = 0; 
-    if (s.ambulance.cont_contagioso == 1) {
-        maximo max_cont = max_ill(s, s.contagiosos_pos);
-        out += max_cont.max + manhatan_distance(max_cont.pos, map.cc);
-    } else if (s.ambulance.cont_contagioso == 2) {
-        out += manhatan_distance(s.ambulance.position, map.cc);
-    } else {
-        if (s.ambulance.cont_no_contagioso == 10) {
-            out += manhatan_distance(s.ambulance.position, map.cn);
-        }else if (s.ambulance.cont_no_contagioso == 9) {
-
-        } else if (s.ambulance.cont_no_contagioso == 8) {
-
-        } else {
-            maximo max_nc = max_ill(s, s.no_contagiosos_pos);
+    if (s.contagiosos != 0 || s.no_contagiosos != 0) {
+        if (s.ambulance.cont_contagioso == 1) {
             maximo max_cont = max_ill(s, s.contagiosos_pos);
-            if (max_nc.max >= max_cont.max) {
-                out += max_nc.max + manhatan_distance(max_nc.pos, map.cn);
-            } else {
-                out += max_cont.max + manhatan_distance(max_cont.pos, map.cc);
+            out += max_cont.max + manhatan_distance(max_cont.pos, map.cc);
+        } else if (s.ambulance.cont_contagioso == 2) {
+            out += manhatan_distance(s.ambulance.position, map.cc);
+        } else {
+            if (s.ambulance.cont_no_contagioso == 10) {
+                out += manhatan_distance(s.ambulance.position, map.cn);
+            }else if (s.ambulance.cont_no_contagioso == 9) {
+                maximo max_ncont = max_ill(s, s.no_contagiosos_pos);
+                out += max_ncont.max + manhatan_distance(max_ncont.pos, map.cn);
+            } //else if (s.ambulance.cont_no_contagioso == 8) {} 
+            else {
+                maximo max_nc = max_ill(s, s.no_contagiosos_pos);
+                maximo max_cont = max_ill(s, s.contagiosos_pos);
+                if (max_nc.max >= max_cont.max) {
+                    out += max_nc.max + manhatan_distance(max_nc.pos, map.cn);
+                } else {
+                    out += max_cont.max + manhatan_distance(max_cont.pos, map.cc);
+                }
             }
-            
-            
         }
     }
-    out += manhatan_distance(s.ambulance.position, map.park);
-
-    
+    else{
+        out += manhatan_distance(s.ambulance.position, map.park);    
+    }
     return out;
     
 }
 
+int h3(State s, Map map){
+    
+    if (s.contagiosos != 0 || s.no_contagiosos != 0)
+    {
+        maximo max_cont = max_ill(s, s.contagiosos_pos);
+        maximo max_no_cont = max_ill(s, s.no_contagiosos_pos);
+        if(max_no_cont.max > max_cont.max){
+            Position hosp_nc = map.search_slot(hospital_nc);
+            return max_no_cont.max + manhatan_distance(max_no_cont.pos, hosp_nc);
+        }
+        else{
+            Position hosp_c = map.search_slot(hospital_c);
+            return max_cont.max + manhatan_distance(max_cont.pos, hosp_c);
+            
+        }
+    }
+    else{
+        Position park = map.search_slot(parking);
+        return manhatan_distance(s.ambulance.position, park);
+    }
+}
 
 std::vector<State> sucesors(State current, Map & map){
     std::vector<State> neighbors_aux(4, current);
@@ -215,7 +236,13 @@ std::vector<State> a_star_v2(State origin, State final, std::function<int(State,
         nodos++;
         if (!(nodos % 1'000)) std::cout << "expandidos: " << nodos <<"\n";
 
-        if (current.s.compare_final(final)) return reconstruct_path(previo, current);
+        if (current.s.compare_final(final)){
+            
+            std::cout << "encontrado\n";
+            std::cout << "nodos expandidos: " << nodos << "\n";
+            return reconstruct_path(previo, current);
+        }
+        
         
         std::vector<State> S = sucesors(current.s, map); 
 
@@ -237,7 +264,8 @@ std::vector<State> a_star_v2(State origin, State final, std::function<int(State,
     }
 
 
-
+    std::cout << "no encontrado\n";
+    std::cout << "nodos expandidos: " << nodos << "\n"; 
     return {};
 }
 
