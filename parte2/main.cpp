@@ -36,14 +36,14 @@ int h1(State s, Map map){
     if (s.contagiosos != 0 || s.no_contagiosos != 0)
     {
         for(auto pos : s.no_contagiosos_pos){
-            int dis = abs(pos.x + pos.y - s.ambulance.position.x - s.ambulance.position.y);
+            int dis = abs(pos.x - s.ambulance.position.x) + abs(pos.y  - s.ambulance.position.y);
             if(dis > max_no_cont.max){
                 max_no_cont.max = dis;
                 max_no_cont.pos = pos;
             }
         }
         for(auto pos : s.contagiosos_pos){
-            int dis = abs(pos.x + pos.y - s.ambulance.position.x - s.ambulance.position.y);
+            int dis = abs(pos.x - s.ambulance.position.x) + abs(pos.y  - s.ambulance.position.y);
             if(dis > max_cont.max){
                 max_cont.max = dis;
                 max_cont.pos = pos;
@@ -52,17 +52,18 @@ int h1(State s, Map map){
         if(max_no_cont.max > max_cont.max){
             max = max_no_cont;
             Position hosp_nc = map.search_slot(hospital_nc);
-            return abs(max.max + hosp_nc.x + hosp_nc.y - max.pos.x - max.pos.y);
+            return max.max + abs(hosp_nc.x - max.pos.x) + abs(hosp_nc.y - max.pos.y);
         }
         else{
             max = max_cont;
             Position hosp_c = map.search_slot(hospital_c);
-            return abs(max.max + hosp_c.x + hosp_c.y - max.pos.x - max.pos.y);
+            return max.max + abs(hosp_c.x - max.pos.x) + abs(hosp_c.y - max.pos.y);
+            
         }
     }
     else{
         Position park = map.search_slot(parking);
-        return abs(s.ambulance.position.x + s.ambulance.position.y - park.x - park.y);
+        return abs(s.ambulance.position.x - park.x) + abs(s.ambulance.position.y - park.y);
     }
 }
 
@@ -308,7 +309,7 @@ std::vector<State> a_star_v2(State origin, State final, std::function<int(State,
     while (!abierta.is_empty()) {
         Element current = abierta.pop(); // extracción del primer elemento de abierta
         nodos++;
-        if (!(nodos % 1'000'000)) std::cout << "expandidos: " << nodos <<"\n";
+        if (!(nodos % 1'000)) std::cout << "expandidos: " << nodos <<"\n";
 
         if (current.s.compare_final(final)) return reconstruct_path(previo, current);
         
