@@ -47,7 +47,7 @@ struct State {
                 break;
             
             case contagioso:
-                if (ambulance.cont_contagioso < 2 && (ambulance.cont_no_contagioso == no_contagiosos || no_contagiosos == 0)) // para recoger a un contagioso tienes que haber entregado a todos lo no contagiosos o tener a los que quedan en la ambulancia
+                if (ambulance.cont_contagioso < 2 && ambulance.cont_no_contagioso <= 8) {// para recoger a un contagioso tienes que haber entregado a todos lo no contagiosos o tener a los que quedan en la ambulancia
                     for (int i = 0; i < contagiosos_pos.size(); ++i) {
                         if (ambulance.position.x == contagiosos_pos[i].x && ambulance.position.y == contagiosos_pos[i].y) {// posición de un contagioso pendiente de recoger
                                 contagiosos_pos.erase(contagiosos_pos.begin() + i);
@@ -55,10 +55,11 @@ struct State {
                             
                         }
                     }
+                }
                 break;
             
             case no_contagioso:
-                if((ambulance.cont_contagioso == 0 && ambulance.cont_no_contagioso < 10) || (ambulance.cont_no_contagioso < 8)) // la ambulancia tiene capacidad para recoger un no contagioso
+                if((ambulance.cont_contagioso == 0 && ambulance.cont_no_contagioso < 10)) // la ambulancia tiene capacidad para recoger un no contagioso
                     for (int i = 0; i < no_contagiosos_pos.size(); ++i) {
                         if (ambulance.position.x == no_contagiosos_pos[i].x && ambulance.position.y == no_contagiosos_pos[i].y) { // posición de un enfermo que aún no se ha recogido
                             no_contagiosos_pos.erase(no_contagiosos_pos.begin() + i); 
@@ -132,202 +133,22 @@ struct State {
         return false;
     }
 
-    /*bool move_right(Map & map) {
-        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.y + 1)){
-            int diff_energy = ambulance.energy - map.get_slot(ambulance.position.x, ambulance.position.y + 1).get_cost();;
-            if (diff_energy >= 0){ // moverse sólo si tengo coste suficiente
-                ambulance.move_right();
-                ambulance.energy = diff_energy;
-
-
-                // Recharge
-                tipo_casilla tipo_casilla_actual = map.get_slot(ambulance.position.x, ambulance.position.y).get_type();
-                if (tipo_casilla_actual == parking){ambulance.recharge();}
-                
-                // Pick up contagioso
-                else if (ambulance.cont_contagioso < 2 && (ambulance.cont_no_contagioso == no_contagiosos || ambulance.cont_no_contagioso == 0)){
-                    for (int i = 0; i < contagiosos_pos.size();i++){
-                        if (ambulance.position.x == contagiosos_pos[i].x && ambulance.position.y == contagiosos_pos[i].y) {
-                            contagiosos_pos.erase(contagiosos_pos.begin() + i);
-                            ambulance.pick_up_contagioso();
-                        }
-                    }    
-                }
-
-                // Pick up no contagioso
-                else if((ambulance.cont_contagioso == 0 && ambulance.cont_no_contagioso < 10) || (ambulance.cont_no_contagioso < 8))                
-                for (int i = 0; i < no_contagiosos_pos.size();i++){
-                    if (ambulance.position.x == no_contagiosos_pos[i].x && ambulance.position.y == no_contagiosos_pos[i].y) {
-                        no_contagiosos_pos.erase(no_contagiosos_pos.begin() + i);
-                        ambulance.pick_up_ncontagioso();
-                    }
-                }
-                // Drop contagioso
-                else if (tipo_casilla_actual == hospital_nc){
-                    int no_contagiosos_entregar = ambulance.cont_no_contagioso;
-                    ambulance.drop_ncontagioso();
-                    no_contagiosos -= no_contagiosos_entregar;
-                }
-                // Drop no contagioso
-                else if ((tipo_casilla_actual == hospital_nc) && (ambulance.cont_contagioso == 0)){
-                    int no_contagiosos_entregar = ambulance.cont_no_contagioso;
-                    ambulance.drop_ncontagioso();
-                    no_contagiosos -= no_contagiosos_entregar;
-                }
-
-                return true;
-            }
-        }
-        return false;
-        };
-    bool move_left(Map & map) {
-        if (ambulance.ev_pos(ambulance.position.x, ambulance.position.y - 1)){
-            int aux_energy = map.get_slot(ambulance.position.x, ambulance.position.y - 1).get_cost();
-            int diff_energy = ambulance.energy - aux_energy;
-            if (diff_energy >= 0){
-                ambulance.move_left();
-                ambulance.energy = diff_energy;
-                return aux_energy;
-            // Recharge
-                tipo_casilla tipo_casilla_actual = map.get_slot(ambulance.position.x, ambulance.position.y).get_type();
-                if (tipo_casilla_actual == parking){ambulance.recharge();}
-                
-                // Pick up contagioso
-                else if (ambulance.cont_contagioso < 2 && (ambulance.cont_no_contagioso == no_contagiosos || ambulance.cont_no_contagioso == 0)){
-                    for (int i = 0; i < contagiosos_pos.size();i++){
-                        if (ambulance.position.x == contagiosos_pos[i].x && ambulance.position.y == contagiosos_pos[i].y) {
-                            contagiosos_pos.erase(contagiosos_pos.begin() + i);
-                            ambulance.pick_up_contagioso();
-                        }
-                    }    
-                }
-
-                // Pick up no contagioso
-                else if((ambulance.cont_contagioso == 0 && ambulance.cont_no_contagioso < 10) || (ambulance.cont_no_contagioso < 8))                
-                for (int i = 0; i < no_contagiosos_pos.size();i++){
-                    if (ambulance.position.x == no_contagiosos_pos[i].x && ambulance.position.y == no_contagiosos_pos[i].y) {
-                        no_contagiosos_pos.erase(no_contagiosos_pos.begin() + i);
-                        ambulance.pick_up_ncontagioso();
-                    }
-                }
-                // Drop contagioso
-                else if (tipo_casilla_actual == hospital_nc){
-                    int no_contagiosos_entregar = ambulance.cont_no_contagioso;
-                    ambulance.drop_ncontagioso();
-                    no_contagiosos -= no_contagiosos_entregar;
-                }
-                // Drop no contagioso
-                else if ((tipo_casilla_actual == hospital_nc) && (ambulance.cont_contagioso == 0)){
-                    int no_contagiosos_entregar = ambulance.cont_no_contagioso;
-                    ambulance.drop_ncontagioso();
-                    no_contagiosos -= no_contagiosos_entregar;
-                }
-
-                return true;
-            }
-        }
-        return false;
-    };
-    bool move_up(Map & map) {
-        if (ambulance.ev_pos(ambulance.position.x - 1, ambulance.position.y)){
-            int aux_energy = map.get_slot(ambulance.position.x, ambulance.position.x - 1).get_cost();
-            int diff_energy = ambulance.energy - aux_energy;
-            if (diff_energy >= 0){
-                ambulance.move_up();
-                ambulance.energy = diff_energy;
-                return aux_energy;
-            // Recharge
-                tipo_casilla tipo_casilla_actual = map.get_slot(ambulance.position.x, ambulance.position.y).get_type();
-                if (tipo_casilla_actual == parking){ambulance.recharge();}
-                
-                // Pick up contagioso
-                else if (ambulance.cont_contagioso < 2 && (ambulance.cont_no_contagioso == no_contagiosos || ambulance.cont_no_contagioso == 0)){
-                    for (int i = 0; i < contagiosos_pos.size();i++){
-                        if (ambulance.position.x == contagiosos_pos[i].x && ambulance.position.y == contagiosos_pos[i].y) {
-                            contagiosos_pos.erase(contagiosos_pos.begin() + i);
-                            ambulance.pick_up_contagioso();
-                        }
-                    }    
-                }
-
-                // Pick up no contagioso
-                else if((ambulance.cont_contagioso == 0 && ambulance.cont_no_contagioso < 10) || (ambulance.cont_no_contagioso < 8))                
-                for (int i = 0; i < no_contagiosos_pos.size();i++){
-                    if (ambulance.position.x == no_contagiosos_pos[i].x && ambulance.position.y == no_contagiosos_pos[i].y) {
-                        no_contagiosos_pos.erase(no_contagiosos_pos.begin() + i);
-                        ambulance.pick_up_ncontagioso();
-                    }
-                }
-                // Drop contagioso
-                else if (tipo_casilla_actual == hospital_nc){
-                    int no_contagiosos_entregar = ambulance.cont_no_contagioso;
-                    ambulance.drop_ncontagioso();
-                    no_contagiosos -= no_contagiosos_entregar;
-                }
-                // Drop no contagioso
-                else if ((tipo_casilla_actual == hospital_nc) && (ambulance.cont_contagioso == 0)){
-                    int no_contagiosos_entregar = ambulance.cont_no_contagioso;
-                    ambulance.drop_ncontagioso();
-                    no_contagiosos -= no_contagiosos_entregar;
-                }
-
-                return true;
-            }
-        }
-        return false;
-    };
-    bool move_down(Map & map) {
-        if(ambulance.ev_pos(ambulance.position.x + 1, ambulance.position.y)){
-            int aux_energy = map.get_slot(ambulance.position.x, ambulance.position.x - 1).get_cost();
-            int diff_energy = ambulance.energy - aux_energy;
-            if (diff_energy >= 0){
-                ambulance.move_down();
-                ambulance.energy = diff_energy;
-                // Recharge
-                tipo_casilla tipo_casilla_actual = map.get_slot(ambulance.position.x, ambulance.position.y).get_type();
-                if (tipo_casilla_actual == parking){ambulance.recharge();}
-                
-                // Pick up contagioso
-                else if (ambulance.cont_contagioso < 2 && (ambulance.cont_no_contagioso == no_contagiosos || ambulance.cont_no_contagioso == 0)){
-                    for (int i = 0; i < contagiosos_pos.size();i++){
-                        if (ambulance.position.x == contagiosos_pos[i].x && ambulance.position.y == contagiosos_pos[i].y) {
-                            contagiosos_pos.erase(contagiosos_pos.begin() + i);
-                            ambulance.pick_up_contagioso();
-                        }
-                    }    
-                }
-
-                // Pick up no contagioso
-                else if((ambulance.cont_contagioso == 0 && ambulance.cont_no_contagioso < 10) || (ambulance.cont_no_contagioso < 8))                
-                for (int i = 0; i < no_contagiosos_pos.size();i++){
-                    if (ambulance.position.x == no_contagiosos_pos[i].x && ambulance.position.y == no_contagiosos_pos[i].y) {
-                        no_contagiosos_pos.erase(no_contagiosos_pos.begin() + i);
-                        ambulance.pick_up_ncontagioso();
-                    }
-                }
-                // Drop contagioso
-                else if (tipo_casilla_actual == hospital_nc){
-                    int no_contagiosos_entregar = ambulance.cont_no_contagioso;
-                    ambulance.drop_ncontagioso();
-                    no_contagiosos -= no_contagiosos_entregar;
-                }
-                // Drop no contagioso
-                else if ((tipo_casilla_actual == hospital_nc) && (ambulance.cont_contagioso == 0)){
-                    int no_contagiosos_entregar = ambulance.cont_no_contagioso;
-                    ambulance.drop_ncontagioso();
-                    no_contagiosos -= no_contagiosos_entregar;
-                }
-
-                return true;
-            }
-        }
-        return false;
-    };
-    */
-
     // state to key
     std::string to_string() {
-        std::string key = std::to_string(ambulance.position.x)+ "/" + std::to_string(ambulance.position.y) + "/" + std::to_string(ambulance.cont_contagioso) + "/" + std::to_string(ambulance.cont_no_contagioso) + "/" + std::to_string(ambulance.energy) + "/" + std::to_string(contagiosos) + "/" + std::to_string(no_contagiosos);
+        std::string pos_cont ="[";
+        std::string pos_ncont = "[";
+
+        for (Position p : contagiosos_pos) {
+            pos_cont += std::to_string(p.x) + ", ";
+        }
+        for (Position p : no_contagiosos_pos) {
+            pos_ncont += std::to_string(p.x) + ", ";
+        }
+        pos_cont += "]";
+        pos_ncont += "]";
+
+
+        std::string key = std::to_string(ambulance.position.x)+ "/" + std::to_string(ambulance.position.y) + "/" + std::to_string(ambulance.cont_contagioso) + "/" + std::to_string(ambulance.cont_no_contagioso) + "/" + std::to_string(ambulance.energy) + "/" + std::to_string(contagiosos) + "/" + std::to_string(no_contagiosos) + "/" + pos_cont + "/" + pos_ncont;
         return key;
     };
 

@@ -218,11 +218,8 @@ std::vector<State> a_star(State origin, State final, std::function<int(State,Map
     Element current; 
     int i = 0;
     while (!abierta.is_empty()) { // si hay nodos en abierta => explorar 
-        //if (++i == 4) exit(0);
-        //std::cout << "abierta:";
-        //abierta.print();
+      
         current = abierta.pop(); // extracción del nodo con mejor f
-        std::cout << "current: " << current.s.to_string() << "    g:" << cerrada.g[current.s.to_string()] << "     f: "<< current.f << "\n";
         if (!cerrada.g.contains(current.s.to_string())) {std::cout << "inicialidado a inf\n"; cerrada.g[current.s.to_string()] = inf;} // si el nodo no se ha explorado antes, su g temporal es infinito
         if (current.g <= cerrada.g[current.s.to_string()]) {  // en la lista abierta pueden haber duplicados de un nodo con distinta g, ordenados por f => si previamente hemos explorado un camino mejor, descartamos este nodo. 
 
@@ -235,16 +232,10 @@ std::vector<State> a_star(State origin, State final, std::function<int(State,Map
             }
 
             std::vector<State> neighbors = sucesors(current.s, map);
-            std::cout << "sucesores: ";
-            for (auto s : neighbors) {
-                std::cout << s.to_string() <<  ", ";
-            }
-            std::cout << "\n";
 
             for (State s : neighbors) {
                 int step_cost = map.get_slot(s.ambulance.position.x, s.ambulance.position.y).get_cost();
                 int temp_g = cerrada.g[current.s.to_string()] + step_cost;
-                //std::cout << "temp_g: " << temp_g << "\n";
                 if (!cerrada.g.contains(s.to_string())) { // si no se ha explorado antes ese nodo, su g es infinita 
                     cerrada.g[s.to_string()] = inf;
                 }
@@ -269,13 +260,13 @@ std::vector<State> a_star_v2(State origin, State final, std::function<int(State,
     Heap abierta(10'000);
     std::unordered_map<std::string, State> previo; 
     Cerrada cerrada; 
+    previo[origin.to_string()] = origin;
 
     abierta.insert(origin, 0, h(origin, map));
     cerrada.insert(origin, 0, h(origin, map));
 
-    bool found = false; 
 
-    while (!abierta.is_empty() && !found) {
+    while (!abierta.is_empty()) {
         Element current = abierta.pop(); // extracción del primer elemento de abierta
 
         if (current.s.compare_final(final)) return reconstruct_path(previo, current);
@@ -293,7 +284,6 @@ std::vector<State> a_star_v2(State origin, State final, std::function<int(State,
             if (temp_g < cerrada.g[s.to_string()]) {
                 previo[s.to_string()] = current.s;
                 cerrada.insert(s, temp_g, temp_g + h(s, map));
-                abierta.borrar(s);
                 abierta.insert(s, temp_g, temp_g + h(s, map));
             }
 
@@ -322,7 +312,7 @@ int main (int argc, char** argv) {
     State final(map);
     final.set_final(); 
    // std::cout << "origin: " << origin.to_string() << std::endl;
-    std::vector<State> path = a_star(origin, final, h1, map);
+    std::vector<State> path = a_star_v2(origin, final, h1, map);
 
     int i = path.size();
     std::cout << "printing path (size =" << i << "): \n";
