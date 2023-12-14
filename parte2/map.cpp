@@ -50,8 +50,8 @@ Position Map::search_slot(tipo_casilla tipo) {
         if (c.get_type() == tipo) {
             break;
         }
-        y = (y + 1) % xSize; // 3
-        if (!(++aux % xSize)) x++;
+        y = (y + 1) % ySize; // 3
+        if (!(++aux % ySize)) x++;
     }
     return Position{x, y};
 }
