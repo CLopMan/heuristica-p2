@@ -308,7 +308,7 @@ std::vector<State> a_star_v2(State origin, State final, std::function<int(State,
     while (!abierta.is_empty()) {
         Element current = abierta.pop(); // extracción del primer elemento de abierta
         nodos++;
-        if (nodos % 1'000'000) std::cout << "\n";
+        if (!(nodos % 1'000'000)) std::cout << "expandidos: " << nodos <<"\n";
 
         if (current.s.compare_final(final)) return reconstruct_path(previo, current);
         
@@ -316,7 +316,6 @@ std::vector<State> a_star_v2(State origin, State final, std::function<int(State,
 
         for (State s : S) {
             if (!cerrada.g.contains(s.to_string())) { // si no se ha explorado antes ese nodo, su g es infinita 
-                std::cout << "first time\n";
                 cerrada.g[s.to_string()] = inf;
             }
             int step_cost = map.get_slot(s.ambulance.position.x, s.ambulance.position.y).get_cost();
