@@ -299,6 +299,7 @@ std::vector<State> a_star_v2(State origin, State final, std::function<int(State,
     std::unordered_map<std::string, State> previo; 
     Cerrada cerrada; 
     previo[origin.to_string()] = origin;
+    int nodos = 0; 
 
     abierta.insert(origin, 0, h(origin, map));
     cerrada.insert(origin, 0, h(origin, map));
@@ -306,6 +307,8 @@ std::vector<State> a_star_v2(State origin, State final, std::function<int(State,
 
     while (!abierta.is_empty()) {
         Element current = abierta.pop(); // extracción del primer elemento de abierta
+        nodos++;
+        if (nodos % 1'000'000) std::cout << "\n";
 
         if (current.s.compare_final(final)) return reconstruct_path(previo, current);
         
