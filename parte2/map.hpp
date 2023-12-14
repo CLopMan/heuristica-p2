@@ -68,8 +68,12 @@ private:
     std::vector<Casilla> map;
     int xSize; // tamaño de fila (número de comlumnas)
     int ySize; // tamaño de columna (número de filas)
+    
 
 public:
+    Position park;
+    Position cc;
+    Position cn;
     Map(std::string path);
     int get_xSize() {return xSize;};
     int get_ySize() {return ySize;};
@@ -83,6 +87,7 @@ public:
     }
     Casilla create_slot(std::string name);
     void print();
+    
 };
 
 #endif

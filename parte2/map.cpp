@@ -28,6 +28,9 @@ Map::Map(std::string path) {
         }
     }
     map = v;
+    park = search_slot(parking);
+    cc = search_slot(hospital_c);
+    cn = search_slot(hospital_nc);
     
 }
 
