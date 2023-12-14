@@ -1,0 +1,9 @@
+- Caso sencillo 3x3, en el que no haya que recargar - mapa_3x3.csv
+- Caso 3x3 encerrado por no transitables - mapa_3x3_noFeasible.csv
+- Mapa relativamente pequeño pero que haya que recargar - mapa_todo_2.csv
+- Mapa con solo contagiosos - mapa_solo_contagiosos
+- Mapa con solo no contagiosos - mapa_solo_no_contagiosos
+- Mapa donde haya que coger a un contagioso si o si - mapa_contagioso_obligatorio
+- Mapa recta - mapa_recta.csv
+- Mapa con un enfermo alcanzable pero no se puede volver de él (rodeado de costes 26) - mapa_enfermo_sin_vuelta.csv
+- Mapa de estrés (por ahora 7x10) - mapa_grande.csv
