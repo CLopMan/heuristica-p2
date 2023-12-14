@@ -12,7 +12,6 @@
 #include "heap.hpp"
 
 int constexpr inf = __INT_MAX__;
-
 struct Cerrada{
     std::unordered_map<std::string, int> g{};
     std::unordered_map<std::string, int> f{};
@@ -24,8 +23,47 @@ struct Cerrada{
 
 };
 
+struct maximo
+{
+    int max;
+    Position pos;
+};
+
 int h1(State s, Map map){
-    return 0;
+    maximo max_cont{0, Position(0, 0)};
+    maximo max_no_cont{0, Position(0, 0)};
+    maximo max{0, Position(0, 0)};
+    if (s.contagiosos != 0 || s.no_contagiosos != 0)
+    {
+        for(auto pos : s.no_contagiosos_pos){
+            int dis = abs(pos.x + pos.y - s.ambulance.position.x - s.ambulance.position.y);
+            if(dis > max_no_cont.max){
+                max_no_cont.max = dis;
+                max_no_cont.pos = pos;
+            }
+        }
+        for(auto pos : s.contagiosos_pos){
+            int dis = abs(pos.x + pos.y - s.ambulance.position.x - s.ambulance.position.y);
+            if(dis > max_cont.max){
+                max_cont.max = dis;
+                max_cont.pos = pos;
+            }
+        }
+        if(max_no_cont.max > max_cont.max){
+            max = max_no_cont;
+            Position hosp_nc = map.search_slot(hospital_nc);
+            return abs(max.max + hosp_nc.x + hosp_nc.y - max.pos.x - max.pos.y);
+        }
+        else{
+            max = max_cont;
+            Position hosp_c = map.search_slot(hospital_c);
+            return abs(max.max + hosp_c.x + hosp_c.y - max.pos.x - max.pos.y);
+        }
+    }
+    else{
+        Position park = map.search_slot(parking);
+        return abs(s.ambulance.position.x + s.ambulance.position.y - park.x - park.y);
+    }
 }
 
 /*void sucesors(State current, std::unordered_map<std::string, State> & previous, std::unordered_map<std::string, int> & g, std::unordered_map<std::string, int> & f, Heap & frontier, Map & map){
