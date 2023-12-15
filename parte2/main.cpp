@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <string>
 #include <functional>
+#include <fstream>
+#include <chrono>
 
 #include "state.hpp"
 #include "map.hpp"
@@ -12,6 +14,15 @@
 #include "heap.hpp"
 
 int constexpr inf = __INT_MAX__;
+
+int nodos = 0;
+int coste = 0;
+int longitud = 0;
+
+
+
+
+
 struct Cerrada{
     std::unordered_map<std::string, int> g{};
     std::unordered_map<std::string, int> f{};
@@ -244,7 +255,7 @@ int h5(State s, Map m){
 
 std::vector<State> reconstruct_path(std::unordered_map<std::string, State> previo, Element goal) {
     State s = goal.s;
-    std::cout << "coste: " << goal.g << "\n";
+    coste = goal.g;
     std::vector<State> path;
     path.push_back(s);
     while (previo[s.to_string()] != s) {
@@ -254,62 +265,11 @@ std::vector<State> reconstruct_path(std::unordered_map<std::string, State> previ
     return path;
 }
 
-
-std::vector<State> a_star(State origin, State final, std::function<int(State,Map)> h, Map & map){
-    Heap abierta(10'000); // nodos pendientes por explorar, ordenados por función de evaluación
-    abierta.insert(origin, -1, 0 + h(origin, map)); 
-    Cerrada cerrada{}; // lista de nodos explorados, se almacena la g
-    cerrada.insert(origin, 0, h(origin, map));
-    std::unordered_map<std::string, State> previo; 
-    previo[origin.to_string()] = origin; // el origen tiene a sí mismo como antecesor
-
-    Element current; 
-    int i = 0;
-    while (!abierta.is_empty()) { // si hay nodos en abierta => explorar 
-      
-        current = abierta.pop(); // extracción del nodo con mejor f
-        if (!cerrada.g.contains(current.s.to_string())) {std::cout << "inicialidado a inf\n"; cerrada.g[current.s.to_string()] = inf;} // si el nodo no se ha explorado antes, su g temporal es infinito
-        if (current.g <= cerrada.g[current.s.to_string()]) {  // en la lista abierta pueden haber duplicados de un nodo con distinta g, ordenados por f => si previamente hemos explorado un camino mejor, descartamos este nodo. 
-
-
-            if (current.s.compare_final(final)) {
-                
-                std::cout << "encontrado\n";
-                return reconstruct_path(previo, current);
-
-            }
-
-            std::vector<State> neighbors = sucesors(current.s, map);
-
-            for (State s : neighbors) {
-                int step_cost = map.get_slot(s.ambulance.position.x, s.ambulance.position.y).get_cost();
-                int temp_g = cerrada.g[current.s.to_string()] + step_cost;
-                if (!cerrada.g.contains(s.to_string())) { // si no se ha explorado antes ese nodo, su g es infinita 
-                    cerrada.g[s.to_string()] = inf;
-                }
-                if (cerrada.g[s.to_string()] > temp_g) {
-                    cerrada.insert(s, temp_g, temp_g + h(s, map)); // actualización de g si obtenemos una mejor g
-                    previo[s.to_string()] = current.s;
-                    abierta.insert(s, temp_g, temp_g + h(s, map)); // insertamos el nodo en abierta por ser un camino candidato 
-                }
-            }
-        } else {
-            std::cout << "descartado\n";
-        }
-        
-
-    }
-
-    return {};
-}
-
-
 std::vector<State> a_star_v2(State origin, State final, std::function<int(State,Map)> h, Map & map) {
     Heap abierta(10'000);
     std::unordered_map<std::string, State> previo; 
     Cerrada cerrada; 
     previo[origin.to_string()] = origin;
-    int nodos = 0; 
 
     abierta.insert(origin, 0, h(origin, map));
     cerrada.insert(origin, 0, h(origin, map));
@@ -318,12 +278,9 @@ std::vector<State> a_star_v2(State origin, State final, std::function<int(State,
     while (!abierta.is_empty()) {
         Element current = abierta.pop(); // extracción del primer elemento de abierta
         nodos++;
-        if (!(nodos % 1'000)) std::cout << "expandidos: " << nodos <<"\n";
 
         if (current.s.compare_final(final)){
             
-            std::cout << "encontrado\n";
-            std::cout << "nodos expandidos: " << nodos << "\n";
             return reconstruct_path(previo, current);
         }
         
@@ -348,36 +305,46 @@ std::vector<State> a_star_v2(State origin, State final, std::function<int(State,
     }
 
 
-    std::cout << "no encontrado\n";
-    std::cout << "nodos expandidos: " << nodos << "\n"; 
     return {};
 }
 
 
 
-void output_str(std::vector<State> path, Map & map) {
+void output_stream(std::vector<State> path, Map & map, char** argv) {
+    std::ofstream out_file(map.name + "-" + argv[2] + ".output");
     for (int i = path.size() - 1; i >= 0; --i) {
-        std::cout << "(" << path[i].ambulance.position.x << ", " << path[i].ambulance.position.y << "):" << map.get_slot(path[i].ambulance.position.x, path[i].ambulance.position.y).get_type() << ":" <<path[i].ambulance.energy << "\n";
+        out_file << "(" << path[i].ambulance.position.x << ", " << path[i].ambulance.position.y << "):" << map.get_slot(path[i].ambulance.position.x, path[i].ambulance.position.y).get_type_str() << ":" <<path[i].ambulance.energy << "\n";
     }
+}
+
+void stat_file(float duration, int coste, int longitud, int nodos, std::string name, char** argv) {
+    std::ofstream stat_file(name + "-" + argv[2] + ".stat", std::ofstream::out);
+    stat_file 
+        << "Tiempo total: " << duration << "\n"
+        << "Coste total: " << coste << "\n"
+        << "Longitud del plan: " << longitud << "\n"
+        << "Nodos expandidos: " << nodos;
+
 }
 
 
 int main (int argc, char** argv) {
+    if (argc != 3) {
+        std::cerr << "Invalid arguments\n";
+        return -1;
+    }
+    auto time = std::chrono::steady_clock::now();
     Map map(argv[1]);
-    map.print();
     State origin(map);
     State final(map);
     final.set_final(); 
-    std::cout << "origin: " << origin.to_string() << std::endl;
     std::vector<State> path = a_star_v2(origin, final, h5, map);
+    auto time2 = std::chrono::steady_clock::now();
+    float duration = std::chrono::duration_cast<std::chrono::milliseconds>(time2 - time).count() / (float) 1000;
+    longitud= path.size();
 
-    int i = path.size();
-    std::cout << "printing path (size =" << i << "): \n";
-    for (auto s : path) {
-        std::cout << i-- << " : " << s.to_string() << "\n";
-    }
-
-    output_str(path, map);
+    output_stream(path, map, argv);
+    stat_file(duration, coste, longitud, nodos, map.name, argv);
 
 
     return 0;
