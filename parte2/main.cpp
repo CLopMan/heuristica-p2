@@ -231,6 +231,20 @@ int h5(State s, Map m){
         out += manhatan_distance(prev, current);
         prev = current;
     }
+    if (enfermos.size() > 0) {
+        Position hosp_c = m.search_slot(hospital_c);
+        Position hosp_nc = m.search_slot(hospital_nc);
+
+        int distance_c = manhatan_distance(enfermos[indices[indices.size() - 1]], hosp_c);
+        int distance_nc = manhatan_distance(enfermos[indices[indices.size() - 1]], hosp_nc);
+        if (distance_c > distance_nc) {
+            out += distance_c + manhatan_distance(hosp_c, m.park);
+        } else {
+            out += distance_nc + manhatan_distance(hosp_nc, m.park);
+        }
+    } else (out += manhatan_distance(s.ambulance.position, m.park));
+    
+
     return out;
 }
     std::vector<State> sucesors(State current, Map & map)

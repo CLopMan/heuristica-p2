@@ -1,7 +1,7 @@
 #!/bin/bash
 
 Yell='\033[1;33m'
-Green='\033[1;33m'
+Green='\033[0;32m'
 NC='\033[0m' # No Color
 
 head="ASTAR-tests/"

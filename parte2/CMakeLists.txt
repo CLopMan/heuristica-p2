@@ -14,7 +14,7 @@ add_executable(parte2
                 main.cpp 
                 state.hpp 
                 heap.cpp
-                element.hpp)
+                )
 
 # Opciones de compilacion
 add_compile_options(-Wall -Wextra -Werror -pedantic -pedantic-errors -O3 -march=native)
