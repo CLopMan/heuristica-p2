@@ -24,7 +24,9 @@ int longitud = 0;
 
 
 struct Cerrada{
+    // g es el coste del camino desde el nodo inicial hasta el nodo actual
     std::unordered_map<std::string, int> g{};
+    // f es el coste estimado del camino desde el nodo actual hasta el nodo final
     std::unordered_map<std::string, int> f{};
 
     void insert(State current, int g, int f){
@@ -34,12 +36,6 @@ struct Cerrada{
 
 };
 
-Position pop_position(int index, std::vector<Position>& v) {
-    Position out = v[index];
-    v.erase(v.begin() + index);
-    return out;
-}
-
 struct maximo
 {
     int max;
@@ -47,10 +43,12 @@ struct maximo
 };
 
 int manhatan_distance(Position origin, Position end) {
+    // Distancia de manhatan
     return abs(origin.x - end.x) + abs(origin.y - end.y);
 }
 
 std::vector<int> get_vector_min_dist(Position origin, std::vector<Position> enfermo){
+    // Devuelve un vector con los indices de los enfermos ordenados siguiendo el mejor camino posible
     std::vector<int> indices;
     std::vector<bool> consultado (enfermo.size(), false);
     int indice_auxiliar=0;
@@ -82,6 +80,7 @@ std::vector<int> get_vector_min_dist(Position origin, std::vector<Position> enfe
 }
 
 maximo max_ill(State s, std::vector<Position> enfermo) {
+    // Devuelve el enfermo mas lejano
     maximo max{0, {0,0}};
     for(auto pos : enfermo){
         int dis = manhatan_distance(pos, s.ambulance.position);
@@ -93,53 +92,8 @@ maximo max_ill(State s, std::vector<Position> enfermo) {
     return max;
 }
 
-maximo min_ill(State s, std::vector<Position> enfermo){
-    maximo min{0, {0, 0}};
-    for(auto pos : enfermo){
-        int dis = manhatan_distance(pos, s.ambulance.position);
-        if (min.max > dis){
-            min.max = dis;
-            min.pos = pos;
-        }
-    }
-    return min;
-}
-
-int h2 (State s, Map map) {
-    int out = 0; 
-    if (s.contagiosos != 0 || s.no_contagiosos != 0) {
-        if (s.ambulance.cont_contagioso == 1) {
-            maximo max_cont = max_ill(s, s.contagiosos_pos);
-            out += max_cont.max + manhatan_distance(max_cont.pos, map.cc);
-        } else if (s.ambulance.cont_contagioso == 2) {
-            out += manhatan_distance(s.ambulance.position, map.cc);
-        } else {
-            if (s.ambulance.cont_no_contagioso == 10) {
-                out += manhatan_distance(s.ambulance.position, map.cn);
-            }else if (s.ambulance.cont_no_contagioso == 9) {
-                maximo max_ncont = max_ill(s, s.no_contagiosos_pos);
-                out += max_ncont.max + manhatan_distance(max_ncont.pos, map.cn);
-            } //else if (s.ambulance.cont_no_contagioso == 8) {} 
-            else {
-                maximo max_nc = max_ill(s, s.no_contagiosos_pos);
-                maximo max_cont = max_ill(s, s.contagiosos_pos);
-                if (max_nc.max >= max_cont.max) {
-                    out += max_nc.max + manhatan_distance(max_nc.pos, map.cn);
-                } else {
-                    out += max_cont.max + manhatan_distance(max_cont.pos, map.cc);
-                }
-            }
-        }
-    }
-    else{
-        out += manhatan_distance(s.ambulance.position, map.park);    
-    }
-    return out;
-    
-}
-
 int h1(State s, Map map){
-    
+    // Si hay enfermos, devuelve la distancia al mas lejano más la distancia al hospital correspondiente
     if (s.contagiosos != 0 || s.no_contagiosos != 0)
     {
         maximo max_cont = max_ill(s, s.contagiosos_pos);
@@ -154,14 +108,57 @@ int h1(State s, Map map){
             
         }
     }
+    // Si no hay enfermos, devuelve la distancia al parking
     else{
         Position park = map.search_slot(parking);
         return manhatan_distance(s.ambulance.position, park);
     }
 }
 
-int h3(State s, Map map){
+int h2 (State s, Map map) {
+    int out = 0; 
+    // Si hay enfermos  
+    if (s.contagiosos != 0 || s.no_contagiosos != 0) {
+        // Si la ambulancia tiene un contagioso devuelve la distancia al contagiosos mas lejano mas la distancia al hospital correspondiente
+        if (s.ambulance.cont_contagioso == 1) {
+            maximo max_cont = max_ill(s, s.contagiosos_pos);
+            out += max_cont.max + manhatan_distance(max_cont.pos, map.cc);
+        // Si la ambulancia tiene dos contagiosos devuelve la distancia al hospital de contagiosos
+        } else if (s.ambulance.cont_contagioso == 2) {
+            out += manhatan_distance(s.ambulance.position, map.cc);
+        // Si no tiene contagiosos
+        } else {
+            // Si tiene 10 no contagiosos devuelve la distancia al hospital de no contagiosos
+            if (s.ambulance.cont_no_contagioso == 10) {
+                out += manhatan_distance(s.ambulance.position, map.cn);
+            // Si tiene 9 no contagiosos devuelve la distancia al no contagioso mas lejano mas la distancia al hospital de no contagiosos
+            }else if (s.ambulance.cont_no_contagioso == 9) {
+                maximo max_ncont = max_ill(s, s.no_contagiosos_pos);
+                out += max_ncont.max + manhatan_distance(max_ncont.pos, map.cn);
+            }
+            // Si no devuelve la distancia al enfermo más lejano mas la distancia al hospital correspondiente
+            else {
+            
+                maximo max_nc = max_ill(s, s.no_contagiosos_pos);
+                maximo max_cont = max_ill(s, s.contagiosos_pos);
+                if (max_nc.max >= max_cont.max) {
+                    out += max_nc.max + manhatan_distance(max_nc.pos, map.cn);
+                } else {
+                    out += max_cont.max + manhatan_distance(max_cont.pos, map.cc);
+                }
+            }
+        }
+    }
+    // Si no hay enfermos devuelve la distancia al parking
+    else{
+        out += manhatan_distance(s.ambulance.position, map.park);    
+    }
+    return out;
     
+}
+
+int h3(State s, Map map){
+    // Si hay enfermos devolverá la distancia al enfermo más lejano más la distancia al hospital correspondiente más la distancia al parking
     if (s.contagiosos != 0 || s.no_contagiosos != 0)
     {
         maximo max_cont = max_ill(s, s.contagiosos_pos);
@@ -176,6 +173,7 @@ int h3(State s, Map map){
             
         }
     }
+    // Si no hay enfermos devolverá la distancia al parking
     else{
         Position park = map.search_slot(parking);
         return manhatan_distance(s.ambulance.position, park);
@@ -183,9 +181,10 @@ int h3(State s, Map map){
 }
 
 int h4(State s, Map map){
-    
+    // Si hay enfermos
     if (s.contagiosos != 0 || s.no_contagiosos != 0)
     {
+        // Si la ambulancia tiene 2 contagiosos y 8 no contagiosos devuelve la distancia al hospital más lejano más la distancia al parking
         if(s.ambulance.cont_contagioso == 2 && s.ambulance.cont_no_contagioso == 8){
             int dis_hosp_nc = manhatan_distance(s.ambulance.position, map.cn);
             int dis_hosp_c = manhatan_distance(s.ambulance.position, map.cc);
@@ -196,9 +195,11 @@ int h4(State s, Map map){
                 return dis_hosp_nc + manhatan_distance(map.cn, map.park);
             }
         }
+        // Si la ambulancia tiene 10 no contagiosos devuelve la distancia al hospital de no contagiosos más la distancia al parking
         else if(s.ambulance.cont_no_contagioso == 10){
             return manhatan_distance(s.ambulance.position, map.cn) + manhatan_distance(map.cn, map.park);
         }
+        // Si no devuelve la distancia del enfermo más lejano más la distancia al hospital correspondiente más la distancia al parking
         else{
             maximo max_cont = max_ill(s, s.contagiosos_pos);
             maximo max_no_cont = max_ill(s, s.no_contagiosos_pos);
@@ -213,6 +214,7 @@ int h4(State s, Map map){
             }
         }
     }
+    // Si no hay enfermos devuelve la distancia al parking
     else{
         Position park = map.search_slot(parking);
         return manhatan_distance(s.ambulance.position, park);
@@ -225,12 +227,14 @@ int h5(State s, Map m){
     enfermos.insert(enfermos.end(), s.no_contagiosos_pos.begin(), s.no_contagiosos_pos.end());
     std::vector<int> indices = get_vector_min_dist(prev, enfermos);
     int out = 0;
+    // En out acumula las distancias de los enfermos
     for (int index : indices)
     {
         Position current = enfermos[index];
         out += manhatan_distance(prev, current);
         prev = current;
     }
+    // Si hay enfermos, suma la distancia al hospital más cercano más la distancia al parking
     if (enfermos.size() > 0) {
         Position hosp_c = m.search_slot(hospital_c);
         Position hosp_nc = m.search_slot(hospital_nc);
@@ -242,6 +246,7 @@ int h5(State s, Map m){
         } else {
             out += distance_nc + manhatan_distance(hosp_nc, m.park);
         }
+    // Si no hay enfermos, suma la distancia al parking
     } else (out += manhatan_distance(s.ambulance.position, m.park));
     
 
@@ -279,7 +284,7 @@ std::vector<State> reconstruct_path(std::unordered_map<std::string, State> previ
     return path;
 }
 
-std::vector<State> a_star_v2(State origin, State final, std::function<int(State,Map)> h, Map & map) {
+std::vector<State> a_star(State origin, State final, std::function<int(State,Map)> h, Map & map) {
     Heap abierta(10'000);
     std::unordered_map<std::string, State> previo; 
     Cerrada cerrada; 
@@ -357,19 +362,19 @@ int main (int argc, char** argv) {
     switch (heuristic)
     {
     case 1:
-        path = a_star_v2(origin, final, h1, map);
+        path = a_star(origin, final, h1, map);
         break;
     case 2:
-        path = a_star_v2(origin, final, h2, map);
+        path = a_star(origin, final, h2, map);
         break;
     case 3:
-        path = a_star_v2(origin, final, h3, map);
+        path = a_star(origin, final, h3, map);
         break;
     case 4:
-        path = a_star_v2(origin, final, h4, map);
+        path = a_star(origin, final, h4, map);
         break;
     case 5:
-        path = a_star_v2(origin, final, h5, map);
+        path = a_star(origin, final, h5, map);
         break;
     default:
         std::cerr << "Invalid heuristic\n";
