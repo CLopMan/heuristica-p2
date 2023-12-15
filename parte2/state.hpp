@@ -154,12 +154,14 @@ struct State {
 
     // operators
     bool operator==(State & other) {
+        // Compara todos los atributos de dos estados
         return {ambulance.position.x == other.ambulance.position.x && ambulance.position.y == other.ambulance.position.y 
         && ambulance.cont_contagioso == other.ambulance.cont_contagioso && ambulance.cont_no_contagioso == other.ambulance.cont_no_contagioso 
         && ambulance.energy == other.ambulance.energy && contagiosos == other.contagiosos && no_contagiosos == other.no_contagiosos
         && contagiosos_pos == other.contagiosos_pos && no_contagiosos_pos== other.no_contagiosos_pos};
     };
     bool operator!=(State & other) {
+        // Compara todos los atributos de dos estados 
         return {!(ambulance.position.x == other.ambulance.position.x && ambulance.position.y == other.ambulance.position.y 
         && ambulance.cont_contagioso == other.ambulance.cont_contagioso && ambulance.cont_no_contagioso == other.ambulance.cont_no_contagioso 
         && ambulance.energy == other.ambulance.energy && contagiosos == other.contagiosos && no_contagiosos == other.no_contagiosos)};
@@ -167,6 +169,7 @@ struct State {
     };
 
     void set_final() {
+        // Define un estado final
         contagiosos = 0; 
         no_contagiosos = 0;
         contagiosos_pos = {};
@@ -174,9 +177,7 @@ struct State {
     };
 
     bool compare_final(State state2){
-        /*return {this->ambulance.position.x == state2.ambulance.position.x && this->ambulance.position.y == state2.ambulance.position.y 
-        && this->ambulance.cont_contagioso == state2.ambulance.cont_contagioso && this->ambulance.cont_no_contagioso == state2.ambulance.cont_no_contagioso 
-        && this->contagiosos == state2.contagiosos && this->no_contagiosos == state2.no_contagiosos};*/
+        // Compara todos los atributos de dos estados excepto la energía
         return {ambulance.position.x == state2.ambulance.position.x && ambulance.position.y == state2.ambulance.position.y 
         && ambulance.cont_contagioso == state2.ambulance.cont_contagioso && ambulance.cont_no_contagioso == state2.ambulance.cont_no_contagioso 
         && contagiosos == state2.contagiosos && no_contagiosos == state2.no_contagiosos

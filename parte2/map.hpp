@@ -32,8 +32,10 @@ private:
     int coste; 
 public:
     Casilla(tipo_casilla tipo, int cost = 0) {
+        // Constructor de Casilla
         this->tipo = tipo;
         Costes costes;
+        // Según el tipo se define el coste
         switch (tipo)
         {
         case contagioso:
