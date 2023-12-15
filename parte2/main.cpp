@@ -86,7 +86,6 @@ maximo max_ill(State s, std::vector<Position> enfermo) {
 
 
 int h2 (State s, Map map) {
-
     int out = 0; 
     if (s.contagiosos != 0 || s.no_contagiosos != 0) {
         if (s.ambulance.cont_contagioso == 1) {
@@ -284,7 +283,7 @@ int main (int argc, char** argv) {
     State origin(map);
     State final(map);
     final.set_final(); 
-   // std::cout << "origin: " << origin.to_string() << std::endl;
+    std::cout << "origin: " << origin.to_string() << std::endl;
     std::vector<State> path = a_star_v2(origin, final, h2, map);
 
     int i = path.size();

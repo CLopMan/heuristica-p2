@@ -16,7 +16,7 @@ struct State {
     // constructor
     State(Map & map) {
         Position pos_parking = map.search_slot(parking);
-        ambulance = Ambulance(pos_parking.x, pos_parking.y, map.get_ySize() - 1, map.get_xSize()- 1);
+        ambulance = Ambulance(pos_parking.x, pos_parking.y, map.get_xSize() - 1, map.get_ySize()- 1);
         contagiosos = map.get_ill(contagioso); // contagiosos no entregados
         no_contagiosos = map.get_ill(no_contagioso); // no contagiosos no entregados
         contagiosos_pos = map.get_ill_pos(contagioso); // posición de los contagiosos no recogidos
@@ -139,10 +139,10 @@ struct State {
         std::string pos_ncont = "[";
 
         for (Position p : contagiosos_pos) {
-            pos_cont += std::to_string(p.x) + ", ";
+            pos_cont += "(" + std::to_string(p.x) + ", " + std::to_string(p.y) + ")";
         }
         for (Position p : no_contagiosos_pos) {
-            pos_ncont += std::to_string(p.x) + ", ";
+            pos_ncont += std::to_string(p.x) + ", " + std::to_string(p.y) + ")";
         }
         pos_cont += "]";
         pos_ncont += "]";
@@ -169,12 +169,18 @@ struct State {
     void set_final() {
         contagiosos = 0; 
         no_contagiosos = 0;
+        contagiosos_pos = {};
+        no_contagiosos_pos = {};
     };
 
     bool compare_final(State state2){
-        return {this->ambulance.position.x == state2.ambulance.position.x && this->ambulance.position.y == state2.ambulance.position.y 
+        /*return {this->ambulance.position.x == state2.ambulance.position.x && this->ambulance.position.y == state2.ambulance.position.y 
         && this->ambulance.cont_contagioso == state2.ambulance.cont_contagioso && this->ambulance.cont_no_contagioso == state2.ambulance.cont_no_contagioso 
-        && this->contagiosos == state2.contagiosos && this->no_contagiosos == state2.no_contagiosos};
+        && this->contagiosos == state2.contagiosos && this->no_contagiosos == state2.no_contagiosos};*/
+        return {ambulance.position.x == state2.ambulance.position.x && ambulance.position.y == state2.ambulance.position.y 
+        && ambulance.cont_contagioso == state2.ambulance.cont_contagioso && ambulance.cont_no_contagioso == state2.ambulance.cont_no_contagioso 
+        && contagiosos == state2.contagiosos && no_contagiosos == state2.no_contagiosos
+        && contagiosos_pos == state2.contagiosos_pos && no_contagiosos_pos== state2.no_contagiosos_pos};
     };
 
 };
