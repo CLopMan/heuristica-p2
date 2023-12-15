@@ -332,7 +332,7 @@ std::vector<State> a_star(State origin, State final, std::function<int(State,Map
 void output_stream(std::vector<State> path, Map & map, char** argv) {
     std::ofstream out_file(map.name + "-" + argv[2] + ".output");
     for (int i = path.size() - 1; i >= 0; --i) {
-        out_file << "(" << path[i].ambulance.position.x << ", " << path[i].ambulance.position.y << "):" << map.get_slot(path[i].ambulance.position.x, path[i].ambulance.position.y).get_type_str() << ":" <<path[i].ambulance.energy << "\n";
+        out_file << "(" << path[i].ambulance.position.x + 1 << ", " << path[i].ambulance.position.y + 1 << "):" << map.get_slot(path[i].ambulance.position.x, path[i].ambulance.position.y).get_type_str() << ":" <<path[i].ambulance.energy << "\n";
     }
 }
 
