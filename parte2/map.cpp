@@ -70,8 +70,8 @@ std::vector<Position> Map::get_ill_pos(tipo_casilla tipo) {
         if (c.get_type() == tipo) {
             out.push_back(Position{x, y});
         }
-        y = (y + 1) % xSize;
-        if (!(++aux % xSize)) x++;
+        y = (y + 1) % ySize;
+        if (!(++aux % ySize)) x++;
     }
     return out;
 }
