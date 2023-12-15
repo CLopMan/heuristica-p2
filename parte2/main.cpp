@@ -23,52 +23,51 @@ struct Cerrada{
 
 };
 
+Position pop_position(int index, std::vector<Position>& v) {
+    Position out = v[index];
+    v.erase(v.begin() + index);
+    return out;
+}
+
 struct maximo
 {
     int max;
     Position pos;
 };
 
-int h1(State s, Map map){
-    maximo max_cont{0, Position{0, 0}};
-    maximo max_no_cont{0, Position{0, 0}};
-    maximo max{0, Position{0, 0}};
-    if (s.contagiosos != 0 || s.no_contagiosos != 0)
-    {
-        for(auto pos : s.no_contagiosos_pos){
-            int dis = abs(pos.x - s.ambulance.position.x) + abs(pos.y  - s.ambulance.position.y);
-            if(dis > max_no_cont.max){
-                max_no_cont.max = dis;
-                max_no_cont.pos = pos;
-            }
-        }
-        for(auto pos : s.contagiosos_pos){
-            int dis = abs(pos.x - s.ambulance.position.x) + abs(pos.y  - s.ambulance.position.y);
-            if(dis > max_cont.max){
-                max_cont.max = dis;
-                max_cont.pos = pos;
-            }
-        }
-        if(max_no_cont.max > max_cont.max){
-            max = max_no_cont;
-            Position hosp_nc = map.search_slot(hospital_nc);
-            return max.max + abs(hosp_nc.x - max.pos.x) + abs(hosp_nc.y - max.pos.y);
-        }
-        else{
-            max = max_cont;
-            Position hosp_c = map.search_slot(hospital_c);
-            return max.max + abs(hosp_c.x - max.pos.x) + abs(hosp_c.y - max.pos.y);
-            
-        }
-    }
-    else{
-        Position park = map.search_slot(parking);
-        return abs(s.ambulance.position.x - park.x) + abs(s.ambulance.position.y - park.y);
-    }
-}
-
 int manhatan_distance(Position origin, Position end) {
     return abs(origin.x - end.x) + abs(origin.y - end.y);
+}
+
+std::vector<int> get_vector_min_dist(Position origin, std::vector<Position> enfermo){
+    std::vector<int> indices;
+    std::vector<bool> consultado (enfermo.size(), false);
+    int indice_auxiliar=0;
+    int minimo_aux = inf;
+    Position pos_actual = origin;
+    while ([](std::vector<bool> v)
+           {
+        for (bool b : v) {
+            if (!b) return true;
+        }
+        return false; }(consultado))
+    {
+        minimo_aux = inf;
+        for (int j = 0; j < enfermo.size(); j++){
+            if(!consultado[j]){
+                int valor_actual = manhatan_distance(pos_actual, enfermo[j]);
+                if (minimo_aux >= valor_actual){
+                    minimo_aux = valor_actual;
+                    indice_auxiliar = j;
+                }
+            }
+        }
+
+        pos_actual = enfermo[indice_auxiliar];
+        consultado[indice_auxiliar] = true;
+        indices.push_back(indice_auxiliar);
+    }
+    return indices;
 }
 
 maximo max_ill(State s, std::vector<Position> enfermo) {
@@ -81,9 +80,19 @@ maximo max_ill(State s, std::vector<Position> enfermo) {
         }
     }
     return max;
-    
 }
 
+maximo min_ill(State s, std::vector<Position> enfermo){
+    maximo min{0, {0, 0}};
+    for(auto pos : enfermo){
+        int dis = manhatan_distance(pos, s.ambulance.position);
+        if (min.max > dis){
+            min.max = dis;
+            min.pos = pos;
+        }
+    }
+    return min;
+}
 
 int h2 (State s, Map map) {
     int out = 0; 
@@ -118,7 +127,7 @@ int h2 (State s, Map map) {
     
 }
 
-int h3(State s, Map map){
+int h1(State s, Map map){
     
     if (s.contagiosos != 0 || s.no_contagiosos != 0)
     {
@@ -140,20 +149,96 @@ int h3(State s, Map map){
     }
 }
 
-std::vector<State> sucesors(State current, Map & map){
-    std::vector<State> neighbors_aux(4, current);
-    std::vector<State> neighbors;
-
-    // Genero los sucesores
-    std::vector<bool> aplicable (4, false);
-    aplicable[0] = neighbors_aux[0].move_right(map);
-    aplicable[1] = neighbors_aux[1].move_left(map);
-    aplicable[2] = neighbors_aux[2].move_up(map);
-    aplicable[3] = neighbors_aux[3].move_down(map);
-    for (int i = 0; i < neighbors_aux.size();i++){
-        if (aplicable[i]) neighbors.push_back(neighbors_aux[i]);
+int h3(State s, Map map){
+    
+    if (s.contagiosos != 0 || s.no_contagiosos != 0)
+    {
+        maximo max_cont = max_ill(s, s.contagiosos_pos);
+        maximo max_no_cont = max_ill(s, s.no_contagiosos_pos);
+        if(max_no_cont.max > max_cont.max){
+            Position hosp_nc = map.search_slot(hospital_nc);
+            return max_no_cont.max + manhatan_distance(max_no_cont.pos, hosp_nc) + manhatan_distance(hosp_nc,map.park);
+        }
+        else{
+            Position hosp_c = map.search_slot(hospital_c);
+            return max_cont.max + manhatan_distance(max_cont.pos, hosp_c) + manhatan_distance(hosp_c,map.park);
+            
+        }
     }
-    return neighbors;
+    else{
+        Position park = map.search_slot(parking);
+        return manhatan_distance(s.ambulance.position, park);
+    }
+}
+
+int h4(State s, Map map){
+    
+    if (s.contagiosos != 0 || s.no_contagiosos != 0)
+    {
+        if(s.ambulance.cont_contagioso == 2 && s.ambulance.cont_no_contagioso == 8){
+            int dis_hosp_nc = manhatan_distance(s.ambulance.position, map.cn);
+            int dis_hosp_c = manhatan_distance(s.ambulance.position, map.cc);
+            if(dis_hosp_c > dis_hosp_nc){
+                return dis_hosp_c + manhatan_distance(map.cc, map.park);
+            }
+            else{
+                return dis_hosp_nc + manhatan_distance(map.cn, map.park);
+            }
+        }
+        else if(s.ambulance.cont_no_contagioso == 10){
+            return manhatan_distance(s.ambulance.position, map.cn) + manhatan_distance(map.cn, map.park);
+        }
+        else{
+            maximo max_cont = max_ill(s, s.contagiosos_pos);
+            maximo max_no_cont = max_ill(s, s.no_contagiosos_pos);
+            if(max_no_cont.max > max_cont.max){
+                Position hosp_nc = map.search_slot(hospital_nc);
+                return max_no_cont.max + manhatan_distance(max_no_cont.pos, hosp_nc) + manhatan_distance(hosp_nc,map.park);
+            }
+            else{
+                Position hosp_c = map.search_slot(hospital_c);
+                return max_cont.max + manhatan_distance(max_cont.pos, hosp_c) + manhatan_distance(hosp_c,map.park);
+                
+            }
+        }
+    }
+    else{
+        Position park = map.search_slot(parking);
+        return manhatan_distance(s.ambulance.position, park);
+    }
+}
+
+int h5(State s, Map m){
+    std::vector<Position> enfermos = s.contagiosos_pos;
+    Position prev = s.ambulance.position;
+    enfermos.insert(enfermos.end(), s.no_contagiosos_pos.begin(), s.no_contagiosos_pos.end());
+    std::vector<int> indices = get_vector_min_dist(prev, enfermos);
+    int out = 0;
+    for (int index : indices)
+    {
+        Position current = enfermos[index];
+        out += manhatan_distance(prev, current);
+        prev = current;
+    }
+    return out;
+}
+    std::vector<State> sucesors(State current, Map & map)
+    {
+        std::vector<State> neighbors_aux(4, current);
+        std::vector<State> neighbors;
+
+        // Genero los sucesores
+        std::vector<bool> aplicable(4, false);
+        aplicable[0] = neighbors_aux[0].move_right(map);
+        aplicable[1] = neighbors_aux[1].move_left(map);
+        aplicable[2] = neighbors_aux[2].move_up(map);
+        aplicable[3] = neighbors_aux[3].move_down(map);
+        for (int i = 0; i < neighbors_aux.size(); i++)
+        {
+            if (aplicable[i])
+                neighbors.push_back(neighbors_aux[i]);
+        }
+        return neighbors;
 }
 
 
@@ -284,7 +369,7 @@ int main (int argc, char** argv) {
     State final(map);
     final.set_final(); 
     std::cout << "origin: " << origin.to_string() << std::endl;
-    std::vector<State> path = a_star_v2(origin, final, h2, map);
+    std::vector<State> path = a_star_v2(origin, final, h5, map);
 
     int i = path.size();
     std::cout << "printing path (size =" << i << "): \n";
