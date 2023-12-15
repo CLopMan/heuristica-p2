@@ -3,3 +3,5 @@ __pycache__
 parte1/*.csv
 parte1/test_cases/*.csv
 build
+parte2/ASTAR-tests/*.output
+parte2/ASTAR-tests/*.stat*

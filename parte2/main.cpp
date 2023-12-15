@@ -337,8 +337,31 @@ int main (int argc, char** argv) {
     Map map(argv[1]);
     State origin(map);
     State final(map);
-    final.set_final(); 
-    std::vector<State> path = a_star_v2(origin, final, h5, map);
+    final.set_final();
+    int heuristic = stoi(std::string(argv[2]));
+    std::vector<State> path;
+    switch (heuristic)
+    {
+    case 1:
+        path = a_star_v2(origin, final, h1, map);
+        break;
+    case 2:
+        path = a_star_v2(origin, final, h2, map);
+        break;
+    case 3:
+        path = a_star_v2(origin, final, h3, map);
+        break;
+    case 4:
+        path = a_star_v2(origin, final, h4, map);
+        break;
+    case 5:
+        path = a_star_v2(origin, final, h5, map);
+        break;
+    default:
+        std::cerr << "Invalid heuristic\n";
+        return -2;
+        break;
+    }
     auto time2 = std::chrono::steady_clock::now();
     float duration = std::chrono::duration_cast<std::chrono::milliseconds>(time2 - time).count() / (float) 1000;
     longitud= path.size();
