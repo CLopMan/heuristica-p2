@@ -14,7 +14,7 @@ Map::Map(std::string path) {
         std::string line; 
         std::string slot_name;
         bool first_row = true;
-        while (file >> line) { // while is archive left
+        while (file >> line) { // mientras quede archivo
             xSize++;
             slot_name.clear();
             for (char c : line) {
@@ -24,7 +24,7 @@ Map::Map(std::string path) {
                     if (first_row) ySize++;
                 } else slot_name.append(std::string(1, c));
             }
-            v.push_back(create_slot(slot_name)); // last of the line
+            v.push_back(create_slot(slot_name)); // último de la línea
             first_row = false;
         }
     }
@@ -51,7 +51,7 @@ Position Map::search_slot(tipo_casilla tipo) {
         if (c.get_type() == tipo) {
             break;
         }
-        y = (y + 1) % ySize; // 3
+        y = (y + 1) % ySize;
         if (!(++aux % ySize)) x++;
     }
     return Position{x, y};
@@ -80,32 +80,6 @@ std::vector<Position> Map::get_ill_pos(tipo_casilla tipo) {
 
 void Map::print() {
     std::cout << xSize << "x" << ySize << "\n";
-    /*for (Casilla c : map) {
-        switch (c.get_type())
-            {
-            case contagioso:
-                std::cout << "C;";
-                break;
-            case no_contagioso:
-                std::cout << "NC;";
-                break;
-            case parking:
-                std::cout << "P;";
-                break;
-            case hospital_c:
-                std::cout << "CC;";
-                break;
-            case hospital_nc:
-                std::cout << "NC;";
-                break;
-            case no_transitable:
-                std::cout << "X;";
-                break;
-            case normal:
-                std::cout << c.get_cost() << ";";
-                break;
-            }
-    }*/
     for (int i = 0; i < xSize; i++) {
         for (int j = 0; j < ySize; j++) {
             switch (this->get_slot(i, j).get_type())
@@ -140,18 +114,3 @@ void Map::print() {
 
     }
 }
-
-
-
-/*
-3x4
-
-0, 0 ; 0, 1; 0, 2; 
-1, 0 ; 1, 1; 1, 2; 
-2, 0 ; 2, 1; 2, 2; 
-3, 0 ; 3, 1; 3, 2; 
-
-
-
-
-*/
