@@ -3,7 +3,7 @@ import sys
 
 def main():
     # compilation
-    os.system("cmake -S . -B build -DCMAKE_BUILD_TYPE=Release > /dev/null")
+    os.system("cmake -S src -B build -DCMAKE_BUILD_TYPE=Release > /dev/null")
     os.system("cmake --build build > /dev/null")
 
     # Execution
