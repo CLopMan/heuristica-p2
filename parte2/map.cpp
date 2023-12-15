@@ -3,6 +3,7 @@
 #include <iostream>
 
 Map::Map(std::string path) {
+    name = path;
     std::ifstream file(path, std::ios::in);
     std::vector<Casilla> v; 
     ySize = 1;

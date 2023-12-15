@@ -61,6 +61,37 @@ public:
     }
     tipo_casilla get_type() {return tipo;};
     int get_cost() {return coste;};
+
+    std::string get_type_str() {
+        switch (tipo)
+            {
+            case contagioso:
+                return "C";
+                break;
+            case no_contagioso:
+                return "N";
+                break;
+            case parking:
+                return "P";
+                break;
+            case hospital_c:
+                return "CC";
+                break;
+            case hospital_nc:
+                return "CN";
+                break;
+            case no_transitable:
+                return "X";
+                break;
+            case normal:
+                return std::to_string(coste);
+                break;
+            
+            default:
+                return "no_valid";
+                break;
+            }
+    }
 };
 
 class Map {
@@ -71,6 +102,7 @@ private:
     
 
 public:
+    std::string name;
     Position park;
     Position cc;
     Position cn;
